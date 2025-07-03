@@ -4,7 +4,9 @@
 <div class="main-container">
     <div class="page-header">
         <h1 class="page-title">Activation Management</h1>
-        <a href="{{ route('activations.create') }}" class="btn-primary">Add Activation</a>
+        <div class="header-actions">
+            <a href="{{ route('activations.create') }}" class="btn-primary">Add Activation</a>
+        </div>
     </div>
 
     <div class="content-section">

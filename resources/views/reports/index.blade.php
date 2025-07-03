@@ -4,7 +4,9 @@
 <div class="main-container">
     <div class="page-header">
         <h1 class="page-title">Reports & Analytics</h1>
-        <a href="{{ route('reports.export') }}" class="btn-primary">Export Excel</a>
+        <div class="header-actions">
+            <a href="{{ route('reports.export') }}" class="btn-primary">Export Excel</a>
+        </div>
     </div>
 
     <!-- Summary Stats -->

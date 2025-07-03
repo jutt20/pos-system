@@ -4,7 +4,9 @@
 <div class="main-container">
     <div class="page-header">
         <h1 class="page-title">SIM Order Management</h1>
-        <a href="{{ route('sim-orders.create') }}" class="btn-primary">Create Order</a>
+        <div class="header-actions">
+            <a href="{{ route('sim-orders.create') }}" class="btn-primary">Create Order</a>
+        </div>
     </div>
 
     <div class="content-section">
