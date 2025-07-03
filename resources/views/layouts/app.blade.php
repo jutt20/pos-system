@@ -236,6 +236,49 @@ body {
     color: #1a1a1a;
     margin-bottom: 30px;
 }
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 12px 20px;
+    margin: 2px 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.sidebar .nav-link i {
+    margin-right: 8px;
+}
+
+main.col-md-9 {
+    margin-left: 16.66667%;
+}
+
+@media (max-width: 767.98px) {
+    main.col-md-9 {
+        margin-left: 0;
+    }
+    .sidebar {
+        position: relative;
+    }
+}
     </style>
 </head>
 <body>
@@ -312,21 +355,26 @@ body {
                     <hr class="text-white-50">
                     
                     <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle me-2"></i>
-                            {{ auth()->user()->name }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">Sign out</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
+    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" 
+       id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle me-2"></i>
+        <span>{{ auth()->user()->name }}</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">
+            <i class="bi bi-person me-2"></i>Profile
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                @csrf
+                <button type="submit" class="dropdown-item">
+                    <i class="bi bi-box-arrow-right me-2"></i>Sign out
+                </button>
+            </form>
+        </li>
+    </ul>
+</div>
                 </div>
             </nav>
 
