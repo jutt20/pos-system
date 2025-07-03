@@ -10,25 +10,23 @@ class SimOrder extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_number',
         'customer_id',
-        'vendor',
+        'employee_id',
         'brand',
         'sim_type',
         'quantity',
-        'order_date',
-        'cost_per_sim',
+        'unit_cost',
         'total_cost',
+        'vendor',
         'status',
-        'tracking_number',
-        'invoice_file',
-        'employee_id',
+        'notes',
+        'order_date'
     ];
 
     protected $casts = [
-        'order_date' => 'date',
-        'cost_per_sim' => 'decimal:2',
+        'unit_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
+        'order_date' => 'date'
     ];
 
     public function customer()
@@ -41,18 +39,15 @@ class SimOrder extends Model
         return $this->belongsTo(Employee::class);
     }
 
-    public static function generateOrderNumber()
+    public function getOrderNumberAttribute()
     {
-        $lastOrder = self::orderBy('id', 'desc')->first();
-        $nextId = $lastOrder ? $lastOrder->id + 1 : 1;
-        return 'SO-' . date('Y') . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+        return 'SO-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
     }
 
     public function getStatusColorAttribute()
     {
         return match($this->status) {
             'pending' => 'warning',
-            'shipped' => 'info',
             'delivered' => 'success',
             'cancelled' => 'danger',
             default => 'secondary'
