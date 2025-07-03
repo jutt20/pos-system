@@ -8,21 +8,29 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ActivationController;
 use App\Http\Controllers\SimOrderController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
 Route::get('/', function () {
-    return redirect()->route('login');
+    return redirect('/login');
 });
 
-// Simple auth routes
-Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-Route::post('login', [AuthenticatedSessionController::class, 'store']);
-Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth:employee'])->name('dashboard');
 
-// Protected routes
-Route::middleware(['auth:employee'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware('auth:employee')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     // Employee Management
     Route::resource('employees', EmployeeController::class);
@@ -42,19 +50,15 @@ Route::middleware(['auth:employee'])->group(function () {
     
     // Reports
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/overview', [ReportController::class, 'overview'])->name('reports.overview');
     Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
-    
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    // Simple routes for other views
-    Route::get('reports/overview', function() {
-        return view('reports.overview');
-    })->name('reports.overview');
-    
-    Route::get('customer-portal', function() {
+});
+
+// Customer Portal Routes
+Route::prefix('customer-portal')->group(function () {
+    Route::get('/', function () {
         return view('customer-portal.dashboard');
     })->name('customer-portal.dashboard');
 });
+
+require __DIR__.'/auth.php';
