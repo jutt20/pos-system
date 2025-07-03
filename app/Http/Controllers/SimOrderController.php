@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SimOrder;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,23 +11,28 @@ class SimOrderController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:manage orders');
+        $this->middleware('permission:manage orders|view orders');
     }
 
     public function index()
     {
-        $simOrders = SimOrder::with('employee')->paginate(10);
-        return view('sim-orders.index', compact('simOrders'));
+        $orders = SimOrder::with(['customer', 'employee'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return view('sim-orders.index', compact('orders'));
     }
 
     public function create()
     {
-        return view('sim-orders.create');
+        $customers = Customer::orderBy('name')->get();
+        return view('sim-orders.create', compact('customers'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'customer_id' => 'required|exists:customers,id',
             'vendor' => 'required|string|max:255',
             'brand' => 'required|string|max:255',
             'sim_type' => 'required|string|max:255',
@@ -45,6 +51,7 @@ class SimOrderController extends Controller
 
         SimOrder::create([
             'order_number' => SimOrder::generateOrderNumber(),
+            'customer_id' => $request->customer_id,
             'vendor' => $request->vendor,
             'brand' => $request->brand,
             'sim_type' => $request->sim_type,
@@ -64,13 +71,14 @@ class SimOrderController extends Controller
 
     public function show(SimOrder $simOrder)
     {
-        $simOrder->load('employee');
+        $simOrder->load(['customer', 'employee']);
         return view('sim-orders.show', compact('simOrder'));
     }
 
     public function edit(SimOrder $simOrder)
     {
-        return view('sim-orders.edit', compact('simOrder'));
+        $customers = Customer::orderBy('name')->get();
+        return view('sim-orders.edit', compact('simOrder', 'customers'));
     }
 
     public function update(Request $request, SimOrder $simOrder)
