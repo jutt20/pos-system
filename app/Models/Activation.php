@@ -12,22 +12,23 @@ class Activation extends Model
     protected $fillable = [
         'customer_id',
         'employee_id',
-        'sim_number',
-        'phone_number',
-        'package_type',
-        'activation_fee',
-        'monthly_fee',
-        'status',
+        'brand',
+        'plan',
+        'sku',
+        'quantity',
+        'price',
+        'cost',
+        'profit',
         'activation_date',
-        'expiry_date',
+        'status',
         'notes',
     ];
 
     protected $casts = [
         'activation_date' => 'date',
-        'expiry_date' => 'date',
-        'activation_fee' => 'decimal:2',
-        'monthly_fee' => 'decimal:2',
+        'price' => 'decimal:2',
+        'cost' => 'decimal:2',
+        'profit' => 'decimal:2',
     ];
 
     public function customer()
@@ -49,10 +50,5 @@ class Activation extends Model
             'terminated' => 'red',
             default => 'gray'
         };
-    }
-
-    public function getIsExpiredAttribute()
-    {
-        return $this->expiry_date && $this->expiry_date < now();
     }
 }

@@ -12,14 +12,15 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('employee_id');
-            $table->string('sim_number')->unique();
-            $table->string('phone_number')->unique();
-            $table->string('package_type');
-            $table->decimal('activation_fee', 8, 2);
-            $table->decimal('monthly_fee', 8, 2)->default(0);
-            $table->enum('status', ['pending', 'active', 'suspended', 'terminated'])->default('pending');
+            $table->string('brand');
+            $table->string('plan');
+            $table->string('sku');
+            $table->integer('quantity');
+            $table->decimal('price', 10, 2); // Selling price
+            $table->decimal('cost', 10, 2);  // Cost price
+            $table->decimal('profit', 10, 2); // Calculated profit
             $table->date('activation_date');
-            $table->date('expiry_date')->nullable();
+            $table->enum('status', ['pending', 'active', 'suspended', 'terminated'])->default('pending');
             $table->text('notes')->nullable();
             $table->timestamps();
 

@@ -14,15 +14,20 @@ class Invoice extends Model
         'employee_id',
         'invoice_number',
         'billing_date',
+        'due_date',
+        'subtotal',
+        'tax_amount',
         'total_amount',
         'status',
-        'due_date',
+        'payment_method',
         'notes',
     ];
 
     protected $casts = [
         'billing_date' => 'date',
         'due_date' => 'date',
+        'subtotal' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
     ];
 
@@ -39,6 +44,13 @@ class Invoice extends Model
     public function items()
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    public static function generateInvoiceNumber()
+    {
+        $lastInvoice = self::latest()->first();
+        $number = $lastInvoice ? (int)substr($lastInvoice->invoice_number, 4) + 1 : 1;
+        return 'INV-' . str_pad($number, 3, '0', STR_PAD_LEFT);
     }
 
     public function getIsOverdueAttribute()

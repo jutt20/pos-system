@@ -13,10 +13,16 @@ class Customer extends Model
         'name',
         'email',
         'phone',
+        'company',
         'address',
-        'cnic',
+        'balance',
+        'prepaid_status',
         'assigned_employee_id',
         'status',
+    ];
+
+    protected $casts = [
+        'balance' => 'decimal:2',
     ];
 
     public function assignedEmployee()
@@ -32,11 +38,6 @@ class Customer extends Model
     public function activations()
     {
         return $this->hasMany(Activation::class);
-    }
-
-    public function simOrders()
-    {
-        return $this->hasMany(SimOrder::class);
     }
 
     public function documents()

@@ -33,41 +33,57 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth:employee')
     ->name('logout');
 
-// Protected Routes
+// Protected Routes with Spatie Permission
 Route::middleware(['auth:employee'])->group(function () {
     
-    // Dashboard
+    // Dashboard - accessible to all authenticated users
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Profile
+    // Profile - accessible to all authenticated users
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // Employees (Admin and Super Admin only)
-    Route::resource('employees', EmployeeController::class);
+    // Employee Management - Only Super Admin and Admin
+    Route::middleware(['permission:manage employees'])->group(function () {
+        Route::resource('employees', EmployeeController::class);
+    });
     
-    // Customers
-    Route::resource('customers', CustomerController::class);
-    Route::get('/customers/{customer}/documents', [CustomerController::class, 'documents'])->name('customers.documents');
-    Route::post('/customers/{customer}/documents', [CustomerController::class, 'uploadDocument'])->name('customers.documents.upload');
+    // Customer Management - Multiple roles can access
+    Route::middleware(['permission:manage customers'])->group(function () {
+        Route::resource('customers', CustomerController::class);
+        Route::get('/customers/{customer}/documents', [CustomerController::class, 'documents'])->name('customers.documents');
+        Route::post('/customers/{customer}/documents', [CustomerController::class, 'uploadDocument'])->name('customers.documents.upload');
+    });
     
-    // Invoices
-    Route::resource('invoices', InvoiceController::class);
-    Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
-    Route::post('/invoices/{invoice}/send', [InvoiceController::class, 'sendEmail'])->name('invoices.send');
+    // Invoice Management
+    Route::middleware(['permission:manage invoices'])->group(function () {
+        Route::resource('invoices', InvoiceController::class);
+        Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
+        Route::post('/invoices/{invoice}/send', [InvoiceController::class, 'sendEmail'])->name('invoices.send');
+    });
     
-    // Activations
-    Route::resource('activations', ActivationController::class);
-    Route::post('/activations/{activation}/activate', [ActivationController::class, 'activate'])->name('activations.activate');
+    // Activation Management
+    Route::middleware(['permission:manage activations'])->group(function () {
+        Route::resource('activations', ActivationController::class);
+        Route::post('/activations/{activation}/activate', [ActivationController::class, 'activate'])->name('activations.activate');
+    });
     
-    // SIM Orders
-    Route::resource('sim-orders', SimOrderController::class);
-    Route::post('/sim-orders/{simOrder}/fulfill', [SimOrderController::class, 'fulfill'])->name('sim-orders.fulfill');
+    // SIM Order Management
+    Route::middleware(['permission:manage orders'])->group(function () {
+        Route::resource('sim-orders', SimOrderController::class);
+        Route::post('/sim-orders/{simOrder}/fulfill', [SimOrderController::class, 'fulfill'])->name('sim-orders.fulfill');
+    });
     
-    // Reports
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/overview', [ReportController::class, 'overview'])->name('reports.overview');
-    Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+    // Reports - Managers and above
+    Route::middleware(['permission:view reports'])->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/overview', [ReportController::class, 'overview'])->name('reports.overview');
+    });
+    
+    // Export functionality
+    Route::middleware(['permission:export data'])->group(function () {
+        Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+    });
     
 });

@@ -11,10 +11,12 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique()->nullable();
-            $table->string('phone');
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('company')->nullable();
             $table->text('address')->nullable();
-            $table->string('cnic')->unique();
+            $table->decimal('balance', 10, 2)->default(0);
+            $table->enum('prepaid_status', ['prepaid', 'postpaid'])->default('postpaid');
             $table->unsignedBigInteger('assigned_employee_id')->nullable();
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->timestamps();

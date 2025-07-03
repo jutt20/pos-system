@@ -13,10 +13,13 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('employee_id');
             $table->string('invoice_number')->unique();
-            $table->date('billing_date')->default(now());
+            $table->date('billing_date');
+            $table->date('due_date')->nullable();
+            $table->decimal('subtotal', 10, 2)->default(0);
+            $table->decimal('tax_amount', 10, 2)->default(0);
             $table->decimal('total_amount', 10, 2);
             $table->enum('status', ['draft', 'sent', 'paid', 'overdue', 'cancelled'])->default('draft');
-            $table->date('due_date');
+            $table->enum('payment_method', ['cash', 'card', 'bank_transfer', 'check'])->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
 

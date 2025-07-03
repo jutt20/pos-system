@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class Employee extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
+
+    protected $guard_name = 'employee';
 
     protected $fillable = [
         'name',
@@ -16,8 +19,6 @@ class Employee extends Authenticatable
         'username',
         'password',
         'phone',
-        'role',
-        'is_active',
     ];
 
     protected $hidden = [
@@ -27,7 +28,7 @@ class Employee extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'is_active' => 'boolean',
+        'password' => 'hashed',
     ];
 
     public function invoices()
@@ -55,39 +56,19 @@ class Employee extends Authenticatable
         return $this->hasMany(CustomerDocument::class, 'uploaded_by');
     }
 
-    // Role checking methods
+    // Helper methods for role checking
     public function isSuperAdmin()
     {
-        return $this->role === 'Super Admin';
+        return $this->hasRole('Super Admin');
     }
 
     public function isAdmin()
     {
-        return in_array($this->role, ['Super Admin', 'Admin']);
+        return $this->hasAnyRole(['Super Admin', 'Admin']);
     }
 
     public function isManager()
     {
-        return in_array($this->role, ['Super Admin', 'Admin', 'Manager']);
-    }
-
-    public function canManageEmployees()
-    {
-        return in_array($this->role, ['Super Admin', 'Admin']);
-    }
-
-    public function canViewReports()
-    {
-        return in_array($this->role, ['Super Admin', 'Admin', 'Manager']);
-    }
-
-    public function canManageCustomers()
-    {
-        return in_array($this->role, ['Super Admin', 'Admin', 'Manager', 'Sales Agent']);
-    }
-
-    public function canCreateInvoices()
-    {
-        return in_array($this->role, ['Super Admin', 'Admin', 'Manager', 'Sales Agent', 'Cashier']);
+        return $this->hasAnyRole(['Super Admin', 'Admin', 'Manager']);
     }
 }

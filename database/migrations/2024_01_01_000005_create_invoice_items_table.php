@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('invoice_id');
             $table->string('description');
+            $table->string('plan')->nullable();
+            $table->string('sku')->nullable();
             $table->integer('quantity');
             $table->decimal('unit_price', 8, 2);
             $table->decimal('total_price', 10, 2);
