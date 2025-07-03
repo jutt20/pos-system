@@ -13,12 +13,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique()->nullable();
             $table->string('phone');
-            $table->string('company')->nullable();
             $table->text('address')->nullable();
-            $table->string('cnic')->nullable();
-            $table->decimal('balance', 10, 2)->default(0);
-            $table->enum('prepaid_status', ['prepaid', 'postpaid'])->default('prepaid');
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('cnic')->unique();
+            $table->date('date_of_birth')->nullable();
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

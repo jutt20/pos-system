@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo   FIXING DATABASE ISSUES
+echo    NEXITEL POS - DATABASE FIX
 echo ========================================
 
 echo Step 1: Dropping existing tables...
@@ -21,8 +21,6 @@ php artisan route:clear
 echo ========================================
 echo   DATABASE FIXED SUCCESSFULLY!
 echo ========================================
-echo.
-echo Your POS system is ready!
 echo URL: http://localhost:8000
 echo Username: admin
 echo Password: password

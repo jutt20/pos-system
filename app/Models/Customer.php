@@ -13,16 +13,16 @@ class Customer extends Model
         'name',
         'email',
         'phone',
-        'company',
         'address',
         'cnic',
-        'balance',
-        'prepaid_status',
-        'status',
+        'date_of_birth',
+        'gender',
+        'is_active',
     ];
 
     protected $casts = [
-        'balance' => 'decimal:2',
+        'date_of_birth' => 'date',
+        'is_active' => 'boolean',
     ];
 
     public function invoices()

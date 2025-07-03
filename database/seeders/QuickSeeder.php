@@ -76,7 +76,7 @@ class QuickSeeder extends Seeder
             'invoice_number' => 'INV-002',
             'billing_date' => now(),
             'total_amount' => 3500.00,
-            'status' => 'pending',
+            'status' => 'draft',
             'due_date' => now()->addDays(15),
         ]);
 

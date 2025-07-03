@@ -17,7 +17,7 @@ class Employee extends Authenticatable
         'password',
         'phone',
         'role',
-        'status',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -27,7 +27,7 @@ class Employee extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'is_active' => 'boolean',
     ];
 
     public function invoices()
