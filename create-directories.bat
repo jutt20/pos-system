@@ -14,8 +14,9 @@ mkdir bootstrap\cache 2>nul
 echo Directories created successfully!
 echo.
 echo Setting permissions...
+
 attrib -r storage /s /d 2>nul
 attrib -r bootstrap\cache /s /d 2>nul
 
-echo Setup complete!
+echo Permissions set successfully!
 pause

@@ -17,30 +17,23 @@ if not exist .env (
 )
 
 echo.
-echo Step 3: Installing Composer dependencies...
-if exist composer.phar (
-    php composer.phar install --no-dev --optimize-autoloader
-) else (
-    composer install --no-dev --optimize-autoloader 2>nul || echo Composer not found - continuing without it...
-)
-
-echo.
-echo Step 4: Generating application key...
+echo Step 3: Generating application key...
 php artisan key:generate --force
 
 echo.
-echo Step 5: Clearing caches...
+echo Step 4: Clearing caches...
 php artisan config:clear
 php artisan cache:clear
 php artisan view:clear
+php artisan route:clear
 
 echo.
-echo Step 6: Running migrations...
+echo Step 5: Running migrations...
 php artisan migrate --force
 
 echo.
-echo Step 7: Seeding database...
-php artisan db:seed --force
+echo Step 6: Seeding database...
+php artisan db:seed --class=QuickSeeder --force
 
 echo.
 echo ========================================
@@ -53,7 +46,7 @@ echo URL: http://localhost:8000
 echo Username: admin
 echo Password: password
 echo.
-echo To start the server, run:
-echo php artisan serve
-echo.
+echo Starting server...
+php artisan serve
+
 pause
