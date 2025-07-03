@@ -7,24 +7,24 @@
     <div class="page-header">
         <div class="page-header-content">
             <h1 class="page-title">
-                <i class="fas fa-mobile-alt"></i>
+                <i class="fas fa-mobile-alt me-2"></i>
                 Activations Management
             </h1>
             <p class="page-subtitle">Manage SIM card activations and track commissions</p>
         </div>
         <div class="header-actions">
-            <div class="search-box">
+            <div class="search-box me-3">
                 <input type="text" class="form-control" placeholder="Search activations..." id="searchInput">
             </div>
             <a href="{{ route('activations.create') }}" class="btn-primary">
-                <i class="fas fa-plus"></i>
+                <i class="fas fa-plus me-2"></i>
                 Add Activation
             </a>
         </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="stats-grid">
+    <div class="stats-grid mb-4">
         <div class="stat-card">
             <div class="stat-icon blue">
                 <i class="fas fa-mobile-alt"></i>
@@ -32,13 +32,9 @@
             <div class="stat-content">
                 <div class="stat-label">Total Activations</div>
                 <div class="stat-value">{{ $activations->count() }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +5 this week
-                </div>
+                <div class="stat-change positive">+5 this week</div>
             </div>
         </div>
-
         <div class="stat-card">
             <div class="stat-icon green">
                 <i class="fas fa-dollar-sign"></i>
@@ -46,13 +42,9 @@
             <div class="stat-content">
                 <div class="stat-label">Total Profit</div>
                 <div class="stat-value green">${{ number_format($activations->sum('profit'), 2) }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +12% this month
-                </div>
+                <div class="stat-change positive">+12% this month</div>
             </div>
         </div>
-
         <div class="stat-card">
             <div class="stat-icon purple">
                 <i class="fas fa-chart-line"></i>
@@ -63,7 +55,6 @@
                 <div class="stat-change positive">Per activation</div>
             </div>
         </div>
-
         <div class="stat-card">
             <div class="stat-icon orange">
                 <i class="fas fa-star"></i>
@@ -79,10 +70,10 @@
     <!-- Activations Table -->
     <div class="content-section">
         <div class="section-header">
-            <h3 class="section-title">
-                <i class="fas fa-list"></i>
+            <h2 class="section-title">
+                <i class="fas fa-list me-2"></i>
                 Recent Activations
-            </h3>
+            </h2>
             <div class="section-actions">
                 <select class="form-select" id="brandFilter">
                     <option value="">All Brands</option>
@@ -135,10 +126,10 @@
                         <td>{{ $activation->created_at->format('M j, Y') }}</td>
                         <td>
                             <div class="action-buttons">
-                                <a href="{{ route('activations.show', $activation) }}" class="btn-sm btn-outline">
+                                <a href="{{ route('activations.show', $activation) }}" class="btn-sm">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('activations.edit', $activation) }}" class="btn-sm btn-outline">
+                                <a href="{{ route('activations.edit', $activation) }}" class="btn-sm">
                                     <i class="fas fa-edit"></i>
                                 </a>
                             </div>
@@ -146,13 +137,13 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center">
+                        <td colspan="8" class="text-center py-5">
                             <div class="empty-state">
-                                <i class="fas fa-mobile-alt fa-3x"></i>
-                                <h5>No activations found</h5>
-                                <p>Start by adding your first activation</p>
+                                <i class="fas fa-mobile-alt fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No activations found</h5>
+                                <p class="text-muted">Start by adding your first activation</p>
                                 <a href="{{ route('activations.create') }}" class="btn-primary">
-                                    <i class="fas fa-plus"></i>
+                                    <i class="fas fa-plus me-2"></i>
                                     Add First Activation
                                 </a>
                             </div>

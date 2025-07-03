@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Models\Employee;
 use App\Models\Invoice;
 use App\Models\Activation;
 use App\Models\SimOrder;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -15,51 +15,28 @@ class ReportController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:employee');
+        $this->middleware('permission:view reports');
     }
 
     public function index()
     {
         // Basic counts
         $totalCustomers = Customer::count();
-        $totalEmployees = Employee::count();
         $totalInvoices = Invoice::count();
         $totalActivations = Activation::count();
+        $totalOrders = SimOrder::count();
+        $totalEmployees = Employee::count();
 
         // Revenue calculations
-        $totalRevenue = Invoice::where('status', 'paid')->sum('total_amount');
-        $monthlyRevenue = Invoice::where('status', 'paid')
-            ->whereMonth('created_at', now()->month)
+        $totalRevenue = Invoice::sum('total_amount');
+        $monthlyRevenue = Invoice::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('total_amount');
+        
+        $yearlyRevenue = Invoice::whereYear('created_at', now()->year)
+            ->sum('total_amount');
 
-        // Profit calculations
-        $totalProfit = Activation::sum('profit');
-        $profitMargin = $totalRevenue > 0 ? ($totalProfit / $totalRevenue) * 100 : 0;
-
-        // Monthly data for charts
-        $monthlyData = collect();
-        for ($i = 11; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $revenue = Invoice::where('status', 'paid')
-                ->whereMonth('created_at', $date->month)
-                ->whereYear('created_at', $date->year)
-                ->sum('total_amount');
-            
-            $monthlyData->push([
-                'month' => $date->format('M Y'),
-                'revenue' => $revenue
-            ]);
-        }
-
-        // Top brands by activations
-        $topBrands = Activation::select('brand', DB::raw('count(*) as count'))
-            ->groupBy('brand')
-            ->orderBy('count', 'desc')
-            ->limit(5)
-            ->get();
-
-        // Recent transactions (invoices and activations)
+        // Recent data
         $recentInvoices = Invoice::with('customer')
             ->orderBy('created_at', 'desc')
             ->limit(5)
@@ -70,62 +47,122 @@ class ReportController extends Controller
             ->limit(5)
             ->get();
 
-        // Customer analytics
-        $newCustomers = Customer::whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->count();
-        
-        $returningCustomers = $totalCustomers - $newCustomers;
+        // Monthly data for charts
+        $monthlyData = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $monthlyData[] = [
+                'month' => $date->format('M Y'),
+                'revenue' => Invoice::whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->sum('total_amount'),
+                'customers' => Customer::whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->count(),
+                'activations' => Activation::whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->count(),
+            ];
+        }
 
         // Top customers by revenue
         $topCustomers = Customer::withSum('invoices', 'total_amount')
-            ->withCount('invoices')
             ->orderBy('invoices_sum_total_amount', 'desc')
             ->limit(10)
             ->get();
 
-        // Invoice status distribution
+        // Status distributions
         $invoiceStatusData = Invoice::select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->get();
 
-        // Activations by brand
-        $activationsByBrand = Activation::select('brand', 
-                DB::raw('count(*) as count'),
-                DB::raw('sum(profit) as total_profit'))
-            ->groupBy('brand')
-            ->orderBy('count', 'desc')
+        $activationStatusData = Activation::select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
             ->get();
+
+        // Performance metrics
+        $averageInvoiceAmount = Invoice::avg('total_amount');
+        $averageActivationTime = Activation::where('status', 'active')
+            ->avg(DB::raw('DATEDIFF(updated_at, created_at)'));
 
         return view('reports.index', compact(
             'totalCustomers',
-            'totalEmployees', 
-            'totalInvoices',
+            'totalInvoices', 
             'totalActivations',
+            'totalOrders',
+            'totalEmployees',
             'totalRevenue',
             'monthlyRevenue',
-            'totalProfit',
-            'profitMargin',
-            'monthlyData',
-            'topBrands',
+            'yearlyRevenue',
             'recentInvoices',
             'recentActivations',
-            'newCustomers',
-            'returningCustomers',
+            'monthlyData',
             'topCustomers',
             'invoiceStatusData',
-            'activationsByBrand'
+            'activationStatusData',
+            'averageInvoiceAmount',
+            'averageActivationTime'
         ));
+    }
+
+    public function overview()
+    {
+        $data = $this->getOverviewData();
+        return view('reports.overview', $data);
     }
 
     public function export(Request $request)
     {
         $type = $request->get('type', 'overview');
         
-        // This would typically generate and return an Excel/PDF file
-        // For now, we'll just redirect back with a success message
-        
-        return redirect()->back()
-            ->with('success', ucfirst($type) . ' report exported successfully!');
+        switch ($type) {
+            case 'customers':
+                return $this->exportCustomers();
+            case 'invoices':
+                return $this->exportInvoices();
+            case 'activations':
+                return $this->exportActivations();
+            default:
+                return $this->exportOverview();
+        }
+    }
+
+    private function getOverviewData()
+    {
+        return [
+            'totalCustomers' => Customer::count(),
+            'totalRevenue' => Invoice::sum('total_amount'),
+            'totalActivations' => Activation::count(),
+            'monthlyRevenue' => Invoice::whereMonth('created_at', now()->month)->sum('total_amount'),
+            'recentInvoices' => Invoice::with('customer')->latest()->limit(10)->get(),
+            'topCustomers' => Customer::withSum('invoices', 'total_amount')
+                ->orderBy('invoices_sum_total_amount', 'desc')
+                ->limit(5)
+                ->get(),
+        ];
+    }
+
+    private function exportCustomers()
+    {
+        // Implementation for customer export
+        return response()->json(['message' => 'Customer export functionality']);
+    }
+
+    private function exportInvoices()
+    {
+        // Implementation for invoice export
+        return response()->json(['message' => 'Invoice export functionality']);
+    }
+
+    private function exportActivations()
+    {
+        // Implementation for activation export
+        return response()->json(['message' => 'Activation export functionality']);
+    }
+
+    private function exportOverview()
+    {
+        // Implementation for overview export
+        return response()->json(['message' => 'Overview export functionality']);
     }
 }
