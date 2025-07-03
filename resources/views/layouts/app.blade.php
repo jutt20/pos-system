@@ -86,7 +86,7 @@
             padding: 1rem 2rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
         }
         
@@ -109,6 +109,7 @@
             border: none;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             border-radius: 0.5rem;
+            min-width: 250px;
         }
         
         .user-dropdown {
@@ -122,10 +123,41 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .user-dropdown .dropdown-toggle:hover {
+            background-color: #f8fafc;
         }
         
         .user-dropdown .dropdown-toggle:after {
             margin-left: 0.5rem;
+        }
+        
+        .dropdown-header {
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.5rem 0.5rem 0 0;
+            margin: -0.5rem -0.5rem 0.5rem -0.5rem;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8fafc;
+            transform: translateX(5px);
+        }
+        
+        .dropdown-item i {
+            width: 20px;
         }
         
         @media (max-width: 768px) {
@@ -285,6 +317,20 @@
             background: #fef2f2;
             color: #991b1b;
         }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.375rem 0.75rem;
+        }
+        
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
@@ -389,15 +435,14 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <h6 class="dropdown-header">
-                            {{ auth()->user()->name }}
-                            <br>
-                            <small class="text-muted">
+                        <div class="dropdown-header">
+                            <div class="fw-bold">{{ auth()->user()->name }}</div>
+                            <small class="opacity-75">
                                 @foreach(auth()->user()->roles as $role)
                                     {{ $role->name }}@if(!$loop->last), @endif
                                 @endforeach
                             </small>
-                        </h6>
+                        </div>
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
@@ -406,6 +451,14 @@
                             Profile Settings
                         </a>
                     </li>
+                    @if(auth()->user()->isSuperAdmin())
+                    <li>
+                        <a class="dropdown-item" href="{{ route('roles.index') }}">
+                            <i class="fas fa-user-shield me-2"></i>
+                            Manage Roles
+                        </a>
+                    </li>
+                    @endif
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="{{ route('logout') }}">

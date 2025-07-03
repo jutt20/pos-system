@@ -11,14 +11,17 @@ class Employee extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
 
-    protected $guard_name = 'employee';
-
     protected $fillable = [
         'name',
         'email',
-        'username',
         'password',
         'phone',
+        'address',
+        'position',
+        'salary',
+        'hire_date',
+        'status',
+        'employee_id'
     ];
 
     protected $hidden = [
@@ -28,35 +31,10 @@ class Employee extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'hire_date' => 'date',
+        'salary' => 'decimal:2',
     ];
 
-    public function invoices()
-    {
-        return $this->hasMany(Invoice::class);
-    }
-
-    public function activations()
-    {
-        return $this->hasMany(Activation::class);
-    }
-
-    public function simOrders()
-    {
-        return $this->hasMany(SimOrder::class);
-    }
-
-    public function assignedCustomers()
-    {
-        return $this->hasMany(Customer::class, 'assigned_employee_id');
-    }
-
-    public function uploadedDocuments()
-    {
-        return $this->hasMany(CustomerDocument::class, 'uploaded_by');
-    }
-
-    // Helper methods for role checking
     public function isSuperAdmin()
     {
         return $this->hasRole('Super Admin');
@@ -64,11 +42,52 @@ class Employee extends Authenticatable
 
     public function isAdmin()
     {
-        return $this->hasAnyRole(['Super Admin', 'Admin']);
+        return $this->hasRole(['Super Admin', 'Admin']);
     }
 
-    public function isManager()
+    public function canManageEmployees()
     {
-        return $this->hasAnyRole(['Super Admin', 'Admin', 'Manager']);
+        return $this->hasPermissionTo('manage employees') || $this->isSuperAdmin();
+    }
+
+    public function canManageCustomers()
+    {
+        return $this->hasPermissionTo('manage customers') || $this->isSuperAdmin();
+    }
+
+    public function canManageInvoices()
+    {
+        return $this->hasPermissionTo('manage invoices') || $this->isSuperAdmin();
+    }
+
+    public function canManageActivations()
+    {
+        return $this->hasPermissionTo('manage activations') || $this->isSuperAdmin();
+    }
+
+    public function canManageOrders()
+    {
+        return $this->hasPermissionTo('manage orders') || $this->isSuperAdmin();
+    }
+
+    public function canViewReports()
+    {
+        return $this->hasPermissionTo('view reports') || $this->isSuperAdmin();
+    }
+
+    // Relationships
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'created_by');
+    }
+
+    public function activations()
+    {
+        return $this->hasMany(Activation::class, 'created_by');
+    }
+
+    public function simOrders()
+    {
+        return $this->hasMany(SimOrder::class, 'created_by');
     }
 }
