@@ -7,24 +7,21 @@
     <div class="page-header">
         <div class="page-header-content">
             <h1 class="page-title">
-                <i class="fas fa-mobile-alt"></i>
+                <i class="fas fa-mobile-alt me-2"></i>
                 Activations Management
             </h1>
-            <p class="page-subtitle">Manage SIM card activations and track commissions</p>
+            <p class="page-subtitle">Manage SIM card activations and track profits</p>
         </div>
         <div class="header-actions">
-            <div class="search-box">
-                <input type="text" class="form-control" placeholder="Search activations..." id="searchInput">
-            </div>
             <a href="{{ route('activations.create') }}" class="btn-primary">
-                <i class="fas fa-plus"></i>
-                Add Activation
+                <i class="fas fa-plus me-2"></i>
+                New Activation
             </a>
         </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="stats-grid">
+    <div class="stats-grid mb-4">
         <div class="stat-card">
             <div class="stat-icon blue">
                 <i class="fas fa-mobile-alt"></i>
@@ -32,76 +29,50 @@
             <div class="stat-content">
                 <div class="stat-label">Total Activations</div>
                 <div class="stat-value">{{ $activations->count() }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +5 this week
-                </div>
             </div>
         </div>
-
         <div class="stat-card">
             <div class="stat-icon green">
                 <i class="fas fa-dollar-sign"></i>
             </div>
             <div class="stat-content">
-                <div class="stat-label">Total Profit</div>
-                <div class="stat-value green">${{ number_format($activations->sum('profit'), 2) }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +12% this month
-                </div>
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value green">${{ number_format($activations->sum('total_cost'), 2) }}</div>
             </div>
         </div>
-
         <div class="stat-card">
             <div class="stat-icon purple">
                 <i class="fas fa-chart-line"></i>
             </div>
             <div class="stat-content">
-                <div class="stat-label">Average Profit</div>
-                <div class="stat-value">${{ $activations->count() > 0 ? number_format($activations->sum('profit') / $activations->count(), 2) : '0.00' }}</div>
-                <div class="stat-change positive">Per activation</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon orange">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="stat-content">
-                <div class="stat-label">Top Brand</div>
-                <div class="stat-value">{{ $activations->groupBy('brand')->sortByDesc(function($group) { return $group->count(); })->keys()->first() ?? 'N/A' }}</div>
-                <div class="stat-change">Most popular</div>
+                <div class="stat-label">Total Profit</div>
+                <div class="stat-value">${{ number_format($activations->sum('profit'), 2) }}</div>
             </div>
         </div>
     </div>
 
-    <!-- Activations Table -->
     <div class="content-section">
         <div class="section-header">
-            <h3 class="section-title">
-                <i class="fas fa-list"></i>
-                Recent Activations
-            </h3>
+            <h2 class="section-title">All Activations</h2>
             <div class="section-actions">
-                <select class="form-select" id="brandFilter">
-                    <option value="">All Brands</option>
-                    @foreach($activations->pluck('brand')->unique() as $brand)
-                        <option value="{{ $brand }}">{{ $brand }}</option>
-                    @endforeach
-                </select>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search activations..." id="searchInput">
+                </div>
             </div>
         </div>
-        
+
         <div class="table-responsive">
-            <table class="data-table" id="activationsTable">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Customer</th>
-                        <th>Phone Number</th>
-                        <th>Brand</th>
                         <th>Plan</th>
-                        <th>Cost</th>
+                        <th>Brand</th>
+                        <th>SKU</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total Cost</th>
                         <th>Profit</th>
                         <th>Date</th>
                         <th>Actions</th>
@@ -111,28 +82,32 @@
                     @forelse($activations as $activation)
                     <tr>
                         <td>
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar me-3" style="width: 40px; height: 40px; font-size: 0.8rem;">
-                                    {{ strtoupper(substr($activation->customer->name, 0, 2)) }}
+                            <div class="customer-info">
+                                <div class="customer-avatar">
+                                    {{ substr($activation->customer->name, 0, 1) }}
                                 </div>
                                 <div>
-                                    <div class="fw-bold">{{ $activation->customer->name }}</div>
-                                    <small class="text-muted">{{ $activation->customer->email }}</small>
+                                    <div class="customer-name">{{ $activation->customer->name }}</div>
+                                    <div class="customer-email">{{ $activation->customer->email }}</div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <span class="badge bg-primary">{{ $activation->phone_number }}</span>
+                            <span class="plan-badge">{{ $activation->plan }}</span>
                         </td>
                         <td>
-                            <span class="badge" style="background: linear-gradient(45deg, #3b82f6, #8b5cf6); color: white;">
+                            <span class="brand-badge brand-{{ strtolower($activation->brand) }}">
                                 {{ $activation->brand }}
                             </span>
                         </td>
-                        <td>{{ $activation->plan_name }}</td>
-                        <td class="text-danger">${{ number_format($activation->cost, 2) }}</td>
-                        <td class="text-success fw-bold">${{ number_format($activation->profit, 2) }}</td>
-                        <td>{{ $activation->created_at->format('M j, Y') }}</td>
+                        <td><code>{{ $activation->sku }}</code></td>
+                        <td>
+                            <span class="quantity-badge">{{ $activation->quantity }}</span>
+                        </td>
+                        <td>${{ number_format($activation->price, 2) }}</td>
+                        <td class="text-success fw-bold">${{ number_format($activation->total_cost, 2) }}</td>
+                        <td class="text-primary fw-bold">${{ number_format($activation->profit, 2) }}</td>
+                        <td>{{ $activation->created_at->format('M d, Y') }}</td>
                         <td>
                             <div class="action-buttons">
                                 <a href="{{ route('activations.show', $activation) }}" class="btn-sm btn-outline">
@@ -146,14 +121,14 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center">
+                        <td colspan="10" class="text-center py-4">
                             <div class="empty-state">
-                                <i class="fas fa-mobile-alt fa-3x"></i>
-                                <h5>No activations found</h5>
-                                <p>Start by adding your first activation</p>
+                                <i class="fas fa-mobile-alt fa-3x text-muted mb-3"></i>
+                                <h5>No Activations Found</h5>
+                                <p class="text-muted">Start by creating your first activation</p>
                                 <a href="{{ route('activations.create') }}" class="btn-primary">
-                                    <i class="fas fa-plus"></i>
-                                    Add First Activation
+                                    <i class="fas fa-plus me-2"></i>
+                                    Create First Activation
                                 </a>
                             </div>
                         </td>
@@ -168,29 +143,13 @@
 
 @push('scripts')
 <script>
-// Search functionality
 document.getElementById('searchInput').addEventListener('keyup', function() {
     const searchTerm = this.value.toLowerCase();
-    const tableRows = document.querySelectorAll('#activationsTable tbody tr');
+    const tableRows = document.querySelectorAll('.data-table tbody tr');
     
     tableRows.forEach(row => {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(searchTerm) ? '' : 'none';
-    });
-});
-
-// Brand filter
-document.getElementById('brandFilter').addEventListener('change', function() {
-    const selectedBrand = this.value.toLowerCase();
-    const tableRows = document.querySelectorAll('#activationsTable tbody tr');
-    
-    tableRows.forEach(row => {
-        if (selectedBrand === '') {
-            row.style.display = '';
-        } else {
-            const brandCell = row.cells[2].textContent.toLowerCase();
-            row.style.display = brandCell.includes(selectedBrand) ? '' : 'none';
-        }
     });
 });
 </script>
