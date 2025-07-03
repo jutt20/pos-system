@@ -8,6 +8,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ActivationController;
 use App\Http\Controllers\SimOrderController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,11 @@ Route::middleware(['auth:employee'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Role Management - Only Super Admin
+    Route::middleware(['role:Super Admin'])->group(function () {
+        Route::resource('roles', RoleController::class);
+    });
     
     // Employee Management - Only Super Admin and Admin
     Route::middleware(['permission:manage employees'])->group(function () {
