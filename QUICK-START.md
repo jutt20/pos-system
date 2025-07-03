@@ -7,7 +7,7 @@
 2. Extract to your web server directory (e.g., `htdocs/nexitel-pos`)
 
 ### Step 2: Quick Setup
-```cmd
+\`\`\`cmd
 # Windows (XAMPP)
 quick-setup.bat
 
