@@ -16,6 +16,7 @@ class Activation extends Model
         'phone_number',
         'package_type',
         'activation_fee',
+        'monthly_fee',
         'status',
         'activation_date',
         'expiry_date',
@@ -26,6 +27,7 @@ class Activation extends Model
         'activation_date' => 'date',
         'expiry_date' => 'date',
         'activation_fee' => 'decimal:2',
+        'monthly_fee' => 'decimal:2',
     ];
 
     public function customer()
@@ -36,5 +38,21 @@ class Activation extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return match($this->status) {
+            'pending' => 'yellow',
+            'active' => 'green',
+            'suspended' => 'orange',
+            'terminated' => 'red',
+            default => 'gray'
+        };
+    }
+
+    public function getIsExpiredAttribute()
+    {
+        return $this->expiry_date && $this->expiry_date < now();
     }
 }

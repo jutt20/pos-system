@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->decimal('unit_price', 8, 2);
             $table->decimal('total_amount', 10, 2);
-            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled'])->default('pending');
             $table->date('order_date');
             $table->date('expected_delivery')->nullable();
             $table->text('notes')->nullable();

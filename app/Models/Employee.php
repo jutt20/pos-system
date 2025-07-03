@@ -50,6 +50,12 @@ class Employee extends Authenticatable
         return $this->hasMany(Customer::class, 'assigned_employee_id');
     }
 
+    public function uploadedDocuments()
+    {
+        return $this->hasMany(CustomerDocument::class, 'uploaded_by');
+    }
+
+    // Role checking methods
     public function isSuperAdmin()
     {
         return $this->role === 'Super Admin';
@@ -73,5 +79,15 @@ class Employee extends Authenticatable
     public function canViewReports()
     {
         return in_array($this->role, ['Super Admin', 'Admin', 'Manager']);
+    }
+
+    public function canManageCustomers()
+    {
+        return in_array($this->role, ['Super Admin', 'Admin', 'Manager', 'Sales Agent']);
+    }
+
+    public function canCreateInvoices()
+    {
+        return in_array($this->role, ['Super Admin', 'Admin', 'Manager', 'Sales Agent', 'Cashier']);
     }
 }

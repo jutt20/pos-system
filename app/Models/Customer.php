@@ -43,4 +43,14 @@ class Customer extends Model
     {
         return $this->hasMany(CustomerDocument::class);
     }
+
+    public function getTotalSpentAttribute()
+    {
+        return $this->invoices()->where('status', 'paid')->sum('total_amount');
+    }
+
+    public function getActiveActivationsAttribute()
+    {
+        return $this->activations()->where('status', 'active')->count();
+    }
 }

@@ -26,7 +26,6 @@ class SimOrder extends Model
     protected $casts = [
         'order_date' => 'date',
         'expected_delivery' => 'date',
-        'quantity' => 'integer',
         'unit_price' => 'decimal:2',
         'total_amount' => 'decimal:2',
     ];
@@ -39,5 +38,17 @@ class SimOrder extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return match($this->status) {
+            'pending' => 'yellow',
+            'processing' => 'blue',
+            'shipped' => 'indigo',
+            'delivered' => 'green',
+            'cancelled' => 'red',
+            default => 'gray'
+        };
     }
 }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('phone_number')->unique();
             $table->string('package_type');
             $table->decimal('activation_fee', 8, 2);
+            $table->decimal('monthly_fee', 8, 2)->default(0);
             $table->enum('status', ['pending', 'active', 'suspended', 'terminated'])->default('pending');
             $table->date('activation_date');
             $table->date('expiry_date')->nullable();

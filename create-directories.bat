@@ -12,9 +12,3 @@ if not exist "storage\logs" mkdir "storage\logs"
 if not exist "bootstrap\cache" mkdir "bootstrap\cache"
 
 echo Directories created successfully!
-
-echo Setting permissions...
-attrib -r storage /s /d
-attrib -r bootstrap\cache /s /d
-
-echo Permissions set successfully!

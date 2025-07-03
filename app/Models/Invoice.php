@@ -41,8 +41,20 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
-    public function calculateTotal()
+    public function getIsOverdueAttribute()
     {
-        return $this->items()->sum('total_price');
+        return $this->due_date < now() && $this->status !== 'paid';
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return match($this->status) {
+            'draft' => 'gray',
+            'sent' => 'blue',
+            'paid' => 'green',
+            'overdue' => 'red',
+            'cancelled' => 'red',
+            default => 'gray'
+        };
     }
 }

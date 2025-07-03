@@ -13,11 +13,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('username')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->enum('role', ['Super Admin', 'Admin', 'Manager', 'Sales Agent', 'Cashier'])->default('Sales Agent');
             $table->boolean('is_active')->default(true);
-            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

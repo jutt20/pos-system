@@ -13,7 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('employee_id');
             $table->string('invoice_number')->unique();
-            $table->date('billing_date');
+            $table->date('billing_date')->default(now());
             $table->decimal('total_amount', 10, 2);
             $table->enum('status', ['draft', 'sent', 'paid', 'overdue', 'cancelled'])->default('draft');
             $table->date('due_date');

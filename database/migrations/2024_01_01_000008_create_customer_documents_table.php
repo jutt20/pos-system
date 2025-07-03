@@ -14,11 +14,13 @@ return new class extends Migration
             $table->string('document_type');
             $table->string('document_name');
             $table->string('file_path');
-            $table->string('file_size');
-            $table->string('mime_type');
+            $table->string('file_size')->nullable();
+            $table->string('mime_type')->nullable();
+            $table->unsignedBigInteger('uploaded_by');
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('uploaded_by')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

@@ -11,12 +11,12 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->string('phone');
-            $table->text('address');
+            $table->text('address')->nullable();
             $table->string('cnic')->unique();
             $table->unsignedBigInteger('assigned_employee_id')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->timestamps();
 
             $table->foreign('assigned_employee_id')->references('id')->on('employees')->onDelete('set null');
