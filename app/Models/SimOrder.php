@@ -10,35 +10,34 @@ class SimOrder extends Model
     use HasFactory;
 
     protected $fillable = [
+        'customer_id',
+        'employee_id',
         'order_number',
-        'vendor',
-        'brand',
         'sim_type',
         'quantity',
-        'order_date',
-        'cost_per_sim',
-        'total_cost',
+        'unit_price',
+        'total_amount',
         'status',
-        'tracking_number',
-        'invoice_file',
-        'employee_id',
+        'order_date',
+        'expected_delivery',
+        'notes',
     ];
 
     protected $casts = [
         'order_date' => 'date',
-        'cost_per_sim' => 'decimal:2',
-        'total_cost' => 'decimal:2',
+        'expected_delivery' => 'date',
+        'quantity' => 'integer',
+        'unit_price' => 'decimal:2',
+        'total_amount' => 'decimal:2',
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
 
     public function employee()
     {
         return $this->belongsTo(Employee::class);
-    }
-
-    public static function generateOrderNumber()
-    {
-        $lastOrder = self::latest()->first();
-        $number = $lastOrder ? intval(substr($lastOrder->order_number, 3)) + 1 : 1;
-        return 'SO-' . str_pad($number, 6, '0', STR_PAD_LEFT);
     }
 }

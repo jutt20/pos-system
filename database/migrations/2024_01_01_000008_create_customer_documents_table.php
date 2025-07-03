@@ -10,13 +10,15 @@ return new class extends Migration
     {
         Schema::create('customer_documents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
-            $table->string('title');
+            $table->unsignedBigInteger('customer_id');
+            $table->string('document_type');
+            $table->string('document_name');
             $table->string('file_path');
-            $table->string('file_type');
-            $table->integer('file_size');
-            $table->foreignId('uploaded_by')->constrained('employees');
+            $table->string('file_size');
+            $table->string('mime_type');
             $table->timestamps();
+
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
         });
     }
 

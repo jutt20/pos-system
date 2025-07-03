@@ -44,4 +44,34 @@ class Employee extends Authenticatable
     {
         return $this->hasMany(SimOrder::class);
     }
+
+    public function assignedCustomers()
+    {
+        return $this->hasMany(Customer::class, 'assigned_employee_id');
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->role === 'Super Admin';
+    }
+
+    public function isAdmin()
+    {
+        return in_array($this->role, ['Super Admin', 'Admin']);
+    }
+
+    public function isManager()
+    {
+        return in_array($this->role, ['Super Admin', 'Admin', 'Manager']);
+    }
+
+    public function canManageEmployees()
+    {
+        return in_array($this->role, ['Super Admin', 'Admin']);
+    }
+
+    public function canViewReports()
+    {
+        return in_array($this->role, ['Super Admin', 'Admin', 'Manager']);
+    }
 }

@@ -11,14 +11,15 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique()->nullable();
+            $table->string('email')->unique();
             $table->string('phone');
-            $table->text('address')->nullable();
+            $table->text('address');
             $table->string('cnic')->unique();
-            $table->date('date_of_birth')->nullable();
-            $table->enum('gender', ['male', 'female', 'other'])->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->unsignedBigInteger('assigned_employee_id')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
+
+            $table->foreign('assigned_employee_id')->references('id')->on('employees')->onDelete('set null');
         });
     }
 

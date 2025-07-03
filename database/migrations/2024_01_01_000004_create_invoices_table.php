@@ -10,18 +10,18 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('employee_id');
             $table->string('invoice_number')->unique();
-            $table->foreignId('customer_id')->constrained();
-            $table->foreignId('employee_id')->constrained();
-            $table->date('billing_date')->default(now());
-            $table->date('due_date')->nullable();
-            $table->decimal('subtotal', 10, 2)->default(0);
-            $table->decimal('tax_amount', 10, 2)->default(0);
+            $table->date('billing_date');
             $table->decimal('total_amount', 10, 2);
-            $table->enum('status', ['draft', 'sent', 'paid', 'overdue', 'pending'])->default('draft');
-            $table->enum('payment_method', ['cash', 'card', 'bank_transfer', 'check'])->nullable();
+            $table->enum('status', ['draft', 'sent', 'paid', 'overdue', 'cancelled'])->default('draft');
+            $table->date('due_date');
             $table->text('notes')->nullable();
             $table->timestamps();
+
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

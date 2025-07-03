@@ -12,22 +12,20 @@ class Activation extends Model
     protected $fillable = [
         'customer_id',
         'employee_id',
-        'brand',
-        'plan',
-        'sku',
-        'quantity',
+        'sim_number',
+        'phone_number',
+        'package_type',
+        'activation_fee',
+        'status',
         'activation_date',
-        'price',
-        'cost',
-        'profit',
+        'expiry_date',
         'notes',
     ];
 
     protected $casts = [
         'activation_date' => 'date',
-        'price' => 'decimal:2',
-        'cost' => 'decimal:2',
-        'profit' => 'decimal:2',
+        'expiry_date' => 'date',
+        'activation_fee' => 'decimal:2',
     ];
 
     public function customer()

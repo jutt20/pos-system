@@ -11,20 +11,15 @@ class CustomerDocument extends Model
 
     protected $fillable = [
         'customer_id',
-        'title',
+        'document_type',
+        'document_name',
         'file_path',
-        'file_type',
         'file_size',
-        'uploaded_by',
+        'mime_type',
     ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
-    }
-
-    public function uploader()
-    {
-        return $this->belongsTo(Employee::class, 'uploaded_by');
     }
 }

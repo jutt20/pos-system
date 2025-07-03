@@ -9,23 +9,19 @@ php artisan migrate:reset --force
 echo Step 2: Running fresh migrations...
 php artisan migrate --force
 
-echo Step 3: Seeding database with sample data...
+echo Step 3: Seeding database with Super Admin...
 php artisan db:seed --class=QuickSeeder --force
 
-echo Step 4: Clearing all caches...
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
-php artisan route:clear
-
 echo ========================================
-echo   DATABASE FIXED SUCCESSFULLY!
+echo   DATABASE SETUP COMPLETE!
 echo ========================================
-echo URL: http://localhost:8000
-echo Username: admin
-echo Password: password
 echo.
-echo Starting server...
-php artisan serve
-
+echo Super Admin Login: superadmin / superadmin123
+echo Admin Login: admin / password
+echo Manager Login: manager / password
+echo Sales Login: sales / password
+echo Cashier Login: cashier / password
+echo.
+echo URL: http://localhost:8000
+echo.
 pause

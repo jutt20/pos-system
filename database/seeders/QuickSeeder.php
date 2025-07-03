@@ -13,6 +13,16 @@ class QuickSeeder extends Seeder
 {
     public function run()
     {
+        // Create Super Admin
+        $superAdmin = Employee::create([
+            'name' => 'Super Administrator',
+            'email' => 'superadmin@nexitel.com',
+            'username' => 'superadmin',
+            'password' => Hash::make('superadmin123'),
+            'phone' => '+1234567888',
+            'role' => 'Super Admin',
+        ]);
+
         // Create admin employee
         $admin = Employee::create([
             'name' => 'System Administrator',
@@ -42,6 +52,15 @@ class QuickSeeder extends Seeder
             'role' => 'Sales Agent',
         ]);
 
+        Employee::create([
+            'name' => 'Mike Cashier',
+            'email' => 'cashier@nexitel.com',
+            'username' => 'cashier',
+            'password' => Hash::make('password'),
+            'phone' => '+1234567893',
+            'role' => 'Cashier',
+        ]);
+
         // Create sample customers
         $customer1 = Customer::create([
             'name' => 'Ahmed Ali',
@@ -49,6 +68,7 @@ class QuickSeeder extends Seeder
             'phone' => '+92300123456',
             'address' => '123 Main Street, Karachi',
             'cnic' => '42101-1234567-1',
+            'assigned_employee_id' => $admin->id,
         ]);
 
         $customer2 = Customer::create([
@@ -57,6 +77,7 @@ class QuickSeeder extends Seeder
             'phone' => '+92301234567',
             'address' => '456 Park Avenue, Lahore',
             'cnic' => '35202-2345678-2',
+            'assigned_employee_id' => $admin->id,
         ]);
 
         // Create sample invoices
@@ -114,8 +135,11 @@ class QuickSeeder extends Seeder
         ]);
 
         echo "Sample data created successfully!\n";
-        echo "Admin Login: admin / password\n";
-        echo "Manager Login: manager / password\n";
-        echo "Sales Login: sales / password\n";
+        echo "=== LOGIN CREDENTIALS ===\n";
+        echo "Super Admin: superadmin / superadmin123\n";
+        echo "Admin: admin / password\n";
+        echo "Manager: manager / password\n";
+        echo "Sales: sales / password\n";
+        echo "Cashier: cashier / password\n";
     }
 }

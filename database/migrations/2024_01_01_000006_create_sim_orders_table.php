@@ -10,19 +10,21 @@ return new class extends Migration
     {
         Schema::create('sim_orders', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('employee_id');
             $table->string('order_number')->unique();
-            $table->string('vendor');
-            $table->string('brand');
             $table->string('sim_type');
             $table->integer('quantity');
+            $table->decimal('unit_price', 8, 2);
+            $table->decimal('total_amount', 10, 2);
+            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
             $table->date('order_date');
-            $table->decimal('cost_per_sim', 8, 2);
-            $table->decimal('total_cost', 10, 2);
-            $table->enum('status', ['pending', 'shipped', 'delivered', 'cancelled'])->default('pending');
-            $table->string('tracking_number')->nullable();
-            $table->string('invoice_file')->nullable();
-            $table->foreignId('employee_id')->constrained();
+            $table->date('expected_delivery')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
+
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

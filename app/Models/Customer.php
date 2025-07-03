@@ -15,15 +15,14 @@ class Customer extends Model
         'phone',
         'address',
         'cnic',
-        'date_of_birth',
-        'gender',
-        'is_active',
+        'assigned_employee_id',
+        'status',
     ];
 
-    protected $casts = [
-        'date_of_birth' => 'date',
-        'is_active' => 'boolean',
-    ];
+    public function assignedEmployee()
+    {
+        return $this->belongsTo(Employee::class, 'assigned_employee_id');
+    }
 
     public function invoices()
     {

@@ -10,14 +10,14 @@ return new class extends Migration
     {
         Schema::create('invoice_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('invoice_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('invoice_id');
             $table->string('description');
-            $table->string('plan')->nullable();
-            $table->string('sku')->nullable();
             $table->integer('quantity');
-            $table->decimal('unit_price', 10, 2);
+            $table->decimal('unit_price', 8, 2);
             $table->decimal('total_price', 10, 2);
             $table->timestamps();
+
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
         });
     }
 

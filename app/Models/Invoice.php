@@ -10,24 +10,19 @@ class Invoice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'invoice_number',
         'customer_id',
         'employee_id',
+        'invoice_number',
         'billing_date',
-        'due_date',
-        'subtotal',
-        'tax_amount',
         'total_amount',
         'status',
-        'payment_method',
+        'due_date',
         'notes',
     ];
 
     protected $casts = [
         'billing_date' => 'date',
         'due_date' => 'date',
-        'subtotal' => 'decimal:2',
-        'tax_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
     ];
 
@@ -46,10 +41,8 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
-    public static function generateInvoiceNumber()
+    public function calculateTotal()
     {
-        $lastInvoice = self::latest()->first();
-        $number = $lastInvoice ? intval(substr($lastInvoice->invoice_number, 4)) + 1 : 1;
-        return 'INV-' . str_pad($number, 6, '0', STR_PAD_LEFT);
+        return $this->items()->sum('total_price');
     }
 }
