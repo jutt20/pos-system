@@ -10,46 +10,47 @@ class SimOrder extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_number',
-        'vendor',
+        'customer_id',
+        'employee_id',
         'brand',
         'sim_type',
         'quantity',
-        'order_date',
-        'cost_per_sim',
+        'unit_cost',
         'total_cost',
+        'vendor',
         'status',
-        'tracking_number',
-        'invoice_file',
-        'employee_id',
+        'notes',
+        'order_date'
     ];
 
     protected $casts = [
-        'order_date' => 'date',
-        'cost_per_sim' => 'decimal:2',
+        'unit_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
+        'order_date' => 'date'
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
 
     public function employee()
     {
         return $this->belongsTo(Employee::class);
     }
 
-    public static function generateOrderNumber()
+    public function getOrderNumberAttribute()
     {
-        $lastOrder = self::latest()->first();
-        $number = $lastOrder ? (int)substr($lastOrder->order_number, 4) + 1 : 1;
-        return 'ORD-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+        return 'SO-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
     }
 
     public function getStatusColorAttribute()
     {
         return match($this->status) {
-            'pending' => 'yellow',
-            'shipped' => 'blue',
-            'delivered' => 'green',
-            'cancelled' => 'red',
-            default => 'gray'
+            'pending' => 'warning',
+            'delivered' => 'success',
+            'cancelled' => 'danger',
+            default => 'secondary'
         };
     }
 }
