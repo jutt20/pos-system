@@ -13,18 +13,17 @@ class Customer extends Model
         'name',
         'email',
         'phone',
+        'company',
         'address',
-        'cnic', // Changed from id_number to cnic
+        'cnic',
         'balance',
         'prepaid_status',
         'status',
-        'assigned_employee_id',
     ];
 
-    public function assignedEmployee()
-    {
-        return $this->belongsTo(Employee::class, 'assigned_employee_id');
-    }
+    protected $casts = [
+        'balance' => 'decimal:2',
+    ];
 
     public function invoices()
     {
