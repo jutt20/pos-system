@@ -8,109 +8,51 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Role: {{ $role->name }}</h2>
-                <div>
-                    @if(!in_array($role->name, ['Super Admin']))
-                        <a href="{{ route('roles.edit', $role) }}" class="btn btn-primary me-2">
-                            <i class="fas fa-edit me-1"></i>
-                            Edit Role
-                        </a>
-                    @endif
-                    <a href="{{ route('roles.index') }}" class="btn btn-outline-secondary">
+                <div class="btn-group">
+                    <a href="{{ route('roles.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-1"></i>
                         Back to Roles
                     </a>
+                    @if($role->name !== 'Super Admin')
+                    <a href="{{ route('roles.edit', $role) }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i>
+                        Edit Role
+                    </a>
+                    @endif
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h6 class="mb-0">Role Information</h6>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-borderless">
-                                <tr>
-                                    <td><strong>Name:</strong></td>
-                                    <td>{{ $role->name }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Guard:</strong></td>
-                                    <td>{{ $role->guard_name }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Created:</strong></td>
-                                    <td>{{ $role->created_at->format('M d, Y H:i') }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Updated:</strong></td>
-                                    <td>{{ $role->updated_at->format('M d, Y H:i') }}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Users Count:</strong></td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ $role->users->count() }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Permissions Count:</strong></td>
-                                    <td>
-                                        <span class="badge bg-success">{{ $role->permissions->count() }}</span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h6 class="mb-0">Users with this Role</h6>
-                        </div>
-                        <div class="card-body">
-                            @if($role->users->count() > 0)
-                                <div class="list-group list-group-flush">
-                                    @foreach($role->users as $user)
-                                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                            <div>
-                                                <strong>{{ $user->name }}</strong>
-                                                <br>
-                                                <small class="text-muted">{{ $user->email }}</small>
-                                            </div>
-                                            <div>
-                                                @if($user->hasRole('Super Admin'))
-                                                    <span class="badge bg-danger">Super Admin</span>
-                                                @elseif($user->hasRole('Admin'))
-                                                    <span class="badge bg-warning">Admin</span>
-                                                @else
-                                                    <span class="badge bg-info">{{ $role->name }}</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="text-muted mb-0">No users assigned to this role.</p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-12">
+                <div class="col-lg-8">
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">Permissions</h6>
+                            <h5 class="mb-0">Role Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Role Name</h6>
+                                    <p class="fs-5">{{ $role->name }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Created</h6>
+                                    <p>{{ $role->created_at->format('M d, Y \a\t g:i A') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Permissions</h5>
                         </div>
                         <div class="card-body">
                             @if($role->name === 'Super Admin')
                                 <div class="alert alert-info">
                                     <i class="fas fa-crown me-2"></i>
-                                    Super Admin has access to all permissions in the system.
+                                    <strong>Super Admin</strong> has all system permissions by default.
                                 </div>
-                            @elseif($role->permissions->count() > 0)
+                            @else
                                 @php
                                     $permissionGroups = [
                                         'Employee Management' => ['manage employees'],
@@ -123,36 +65,75 @@
                                         'System Management' => ['export data', 'system settings']
                                     ];
                                 @endphp
-                                
+
                                 <div class="row">
                                     @foreach($permissionGroups as $group => $groupPermissions)
-                                        @php
-                                            $hasGroupPermissions = $role->permissions->whereIn('name', $groupPermissions)->count() > 0;
-                                        @endphp
-                                        @if($hasGroupPermissions)
-                                            <div class="col-md-6 mb-3">
-                                                <div class="card">
-                                                    <div class="card-header py-2">
-                                                        <h6 class="mb-0">{{ $group }}</h6>
-                                                    </div>
-                                                    <div class="card-body py-2">
-                                                        @foreach($groupPermissions as $permissionName)
-                                                            @if($role->hasPermissionTo($permissionName))
-                                                                <span class="badge bg-success me-1 mb-1">
-                                                                    <i class="fas fa-check me-1"></i>
-                                                                    {{ ucwords(str_replace('_', ' ', $permissionName)) }}
-                                                                </span>
-                                                            @endif
-                                                        @endforeach
-                                                    </div>
-                                                </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-header py-2">
+                                                <h6 class="mb-0">{{ $group }}</h6>
                                             </div>
-                                        @endif
+                                            <div class="card-body py-2">
+                                                @foreach($groupPermissions as $permissionName)
+                                                    @if($role->permissions->where('name', $permissionName)->count() > 0)
+                                                        <span class="badge bg-success me-1 mb-1">
+                                                            <i class="fas fa-check me-1"></i>
+                                                            {{ ucwords(str_replace('_', ' ', $permissionName)) }}
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-light text-dark me-1 mb-1">
+                                                            <i class="fas fa-times me-1"></i>
+                                                            {{ ucwords(str_replace('_', ' ', $permissionName)) }}
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                     @endforeach
                                 </div>
-                            @else
-                                <p class="text-muted mb-0">No permissions assigned to this role.</p>
                             @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h3 class="text-primary">{{ $role->users->count() }}</h3>
+                                    <p class="text-muted mb-0">Users</p>
+                                </div>
+                                <div class="col-6">
+                                    <h3 class="text-success">{{ $role->permissions->count() }}</h3>
+                                    <p class="text-muted mb-0">Permissions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Users with this Role</h5>
+                        </div>
+                        <div class="card-body">
+                            @forelse($role->users as $user)
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="avatar-circle me-2">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <strong>{{ $user->name }}</strong><br>
+                                        <small class="text-muted">{{ $user->email }}</small>
+                                    </div>
+                                </div>
+                            @empty
+                                <p class="text-muted mb-0">No users assigned to this role.</p>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -160,4 +141,19 @@
         </div>
     </div>
 </div>
+
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+</style>
 @endsection

@@ -4,27 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Invoice extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'invoice_number',
         'customer_id',
         'employee_id',
-        'invoice_number',
-        'billing_date',
+        'invoice_date',
         'due_date',
         'subtotal',
         'tax_amount',
         'total_amount',
         'status',
         'payment_method',
-        'notes',
+        'notes'
     ];
 
     protected $casts = [
-        'billing_date' => 'date',
+        'invoice_date' => 'date',
         'due_date' => 'date',
         'subtotal' => 'decimal:2',
         'tax_amount' => 'decimal:2',
@@ -49,24 +50,22 @@ class Invoice extends Model
     public static function generateInvoiceNumber()
     {
         $lastInvoice = self::latest()->first();
-        $number = $lastInvoice ? (int)substr($lastInvoice->invoice_number, 4) + 1 : 1;
-        return 'INV-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+        $number = $lastInvoice ? intval(substr($lastInvoice->invoice_number, 4)) + 1 : 1;
+        return 'INV-' . str_pad($number, 6, '0', STR_PAD_LEFT);
     }
 
-    public function getIsOverdueAttribute()
+    public function getFormattedInvoiceDateAttribute()
     {
-        return $this->due_date < now() && $this->status !== 'paid';
+        return $this->invoice_date ? $this->invoice_date->format('M d, Y') : 'N/A';
     }
 
-    public function getStatusColorAttribute()
+    public function getFormattedDueDateAttribute()
     {
-        return match($this->status) {
-            'draft' => 'gray',
-            'sent' => 'blue',
-            'paid' => 'green',
-            'overdue' => 'red',
-            'cancelled' => 'red',
-            default => 'gray'
-        };
+        return $this->due_date ? $this->due_date->format('M d, Y') : 'N/A';
+    }
+
+    public function isOverdue()
+    {
+        return $this->due_date && $this->due_date->isPast() && $this->status !== 'paid';
     }
 }
