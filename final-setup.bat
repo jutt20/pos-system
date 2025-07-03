@@ -1,52 +1,46 @@
 @echo off
-echo ========================================
-echo    NEXITEL POS SYSTEM - FINAL SETUP
-echo ========================================
-echo.
+echo Creating Laravel POS System...
 
-echo Step 1: Creating directories...
-call create-directories.bat
+REM Create necessary directories
+mkdir storage\app\public 2>nul
+mkdir storage\framework\cache\data 2>nul
+mkdir storage\framework\sessions 2>nul
+mkdir storage\framework\views 2>nul
+mkdir storage\logs 2>nul
+mkdir bootstrap\cache 2>nul
 
-echo.
-echo Step 2: Copying environment file...
+REM Set permissions (Windows)
+attrib -r storage /s /d
+attrib -r bootstrap\cache /s /d
+
+REM Copy environment file
 if not exist .env (
     copy .env.example .env
-    echo Environment file created!
-) else (
-    echo Environment file already exists!
 )
 
-echo.
-echo Step 3: Generating application key...
+REM Clear any cached config
+php artisan config:clear 2>nul
+php artisan cache:clear 2>nul
+php artisan view:clear 2>nul
+
+REM Generate application key
 php artisan key:generate --force
 
-echo.
-echo Step 4: Clearing caches...
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
-php artisan route:clear
+REM Run migrations
+php artisan migrate:fresh --force
 
-echo.
-echo Step 5: Running migrations...
-php artisan migrate --force
-
-echo.
-echo Step 6: Seeding database...
+REM Seed database
 php artisan db:seed --class=QuickSeeder --force
 
 echo.
 echo ========================================
-echo    SETUP COMPLETE!
+echo   Laravel POS System Setup Complete!
 echo ========================================
-echo.
-echo Your POS system is ready!
 echo.
 echo URL: http://localhost:8000
 echo Username: admin
 echo Password: password
 echo.
-echo Starting server...
-php artisan serve
-
+echo Run: php artisan serve
+echo.
 pause

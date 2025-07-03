@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class Employee extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -17,6 +16,7 @@ class Employee extends Authenticatable
         'username',
         'password',
         'phone',
+        'role',
         'status',
     ];
 
@@ -30,11 +30,6 @@ class Employee extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function assignedCustomers()
-    {
-        return $this->hasMany(Customer::class, 'assigned_employee_id');
-    }
-
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
@@ -43,10 +38,5 @@ class Employee extends Authenticatable
     public function activations()
     {
         return $this->hasMany(Activation::class);
-    }
-
-    public function simOrders()
-    {
-        return $this->hasMany(SimOrder::class);
     }
 }

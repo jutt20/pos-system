@@ -1,5 +1,5 @@
 @echo off
-echo Creating Laravel directories...
+echo Creating required directories...
 
 mkdir storage\app 2>nul
 mkdir storage\app\public 2>nul
@@ -12,11 +12,4 @@ mkdir storage\logs 2>nul
 mkdir bootstrap\cache 2>nul
 
 echo Directories created successfully!
-echo.
-echo Setting permissions...
-
-attrib -r storage /s /d 2>nul
-attrib -r bootstrap\cache /s /d 2>nul
-
-echo Permissions set successfully!
 pause
