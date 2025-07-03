@@ -1,95 +1,127 @@
 @extends('layouts.app')
 
+@section('title', 'Employees')
+
 @section('content')
-<div class="main-container">
-    <div class="page-header">
-        <h1 class="page-title">Employee Portal UI</h1>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link active" href="{{ route('employees.index') }}">Employee Management</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('customers.index') }}">Customer Management</a>
-        </li>
-    </ul>
-
-    <!-- Employee Management Section -->
-    <div class="content-section">
-        <h2 class="section-title">Employee Management</h2>
-        
-        <!-- Add Employee Form -->
-        <form action="{{ route('employees.store') }}" method="POST" style="margin-bottom: 30px;">
-            @csrf
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 16px; align-items: end;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <input type="text" name="name" class="form-control" placeholder="Employee Name" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <input type="email" name="email" class="form-control" placeholder="Employee Email" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <select name="roles[]" class="form-control" required>
-                        <option value="">Select Role</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Sales Agent">Sales Agent</option>
-                        <option value="Accountant">Accountant</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-primary">Add Employee</button>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Employee Management</h2>
+                <a href="{{ route('employees.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    Add New Employee
+                </a>
             </div>
-            <input type="password" name="password" value="password123" style="display: none;">
-            <input type="password" name="password_confirmation" value="password123" style="display: none;">
-            <input type="text" name="username" value="" style="display: none;">
-        </form>
 
-        <!-- All Employees Table -->
-        <h3 class="section-title">All Employees</h3>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($employees as $employee)
-                <tr>
-                    <td>{{ $employee->name }}</td>
-                    <td>{{ $employee->email }}</td>
-                    <td>
-                        @foreach($employee->roles as $role)
-                            {{ $role->name }}
-                        @endforeach
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="{{ route('employees.edit', $employee) }}" class="btn-sm">✏️</a>
-                            <form action="{{ route('employees.destroy', $employee) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-sm" style="background: #fee2e2; color: #991b1b; border-color: #fecaca;" onclick="return confirm('Are you sure?')">🗑️</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i>
+                        All Employees
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Hire Date</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($employees as $employee)
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle me-3">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <div>
+                                                    <strong>{{ $employee->name }}</strong>
+                                                    @if($employee->employee_id)
+                                                        <br><small class="text-muted">ID: {{ $employee->employee_id }}</small>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ $employee->email }}</td>
+                                        <td>{{ $employee->phone ?? 'N/A' }}</td>
+                                        <td>
+                                            @foreach($employee->roles as $role)
+                                                @if($role->name === 'Super Admin')
+                                                    <span class="badge bg-danger">{{ $role->name }}</span>
+                                                @elseif($role->name === 'Admin')
+                                                    <span class="badge bg-warning">{{ $role->name }}</span>
+                                                @elseif($role->name === 'Manager')
+                                                    <span class="badge bg-info">{{ $role->name }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $role->name }}</span>
+                                                @endif
+                                            @endforeach
+                                            @if($employee->roles->isEmpty())
+                                                <span class="badge bg-light text-dark">No Role</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($employee->status === 'active')
+                                                <span class="badge bg-success">Active</span>
+                                            @else
+                                                <span class="badge bg-danger">Inactive</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $employee->hire_date ? $employee->hire_date->format('M d, Y') : 'N/A' }}</td>
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('employees.show', $employee) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                @if(!$employee->isSuperAdmin() && $employee->id !== auth()->id())
+                                                    <form action="{{ route('employees.destroy', $employee) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                                onclick="return confirm('Are you sure you want to delete this employee?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">No employees found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<script>
-// Auto-generate username from email
-document.querySelector('input[name="email"]').addEventListener('input', function() {
-    const email = this.value;
-    const username = email.split('@')[0];
-    document.querySelector('input[name="username"]').value = username;
-});
-</script>
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+</style>
 @endsection
