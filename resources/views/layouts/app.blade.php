@@ -42,16 +42,16 @@
             min-height: 100vh;
         }
 
-        /* Enhanced Header */
+        /* Modern App Header */
         .app-header {
             background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
             color: white;
             padding: 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 3px solid #3b82f6;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .header-content {
@@ -59,55 +59,102 @@
             justify-content: space-between;
             align-items: center;
             max-width: 100%;
-            padding: 16px 24px;
+            padding: 16px 32px;
             margin-left: var(--sidebar-width);
+            min-height: 70px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 24px;
         }
 
-        .header-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-decoration: none;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-brand i {
-            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
-            padding: 8px;
+        .mobile-menu-toggle {
+            display: none;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 8px;
-            font-size: 1.2rem;
+            padding: 8px 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(255,255,255,0.2);
         }
 
         .breadcrumb-nav {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             font-size: 0.9rem;
-            opacity: 0.8;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .breadcrumb-nav a {
             color: rgba(255,255,255,0.8);
             text-decoration: none;
             transition: color 0.2s;
+            font-weight: 500;
         }
 
         .breadcrumb-nav a:hover {
             color: white;
         }
 
+        .breadcrumb-nav .separator {
+            color: rgba(255,255,255,0.5);
+            margin: 0 4px;
+        }
+
+        .breadcrumb-current {
+            color: white;
+            font-weight: 600;
+        }
+
         .header-right {
             display: flex;
             align-items: center;
             gap: 20px;
+        }
+
+        .header-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-search input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            padding: 8px 16px 8px 40px;
+            color: white;
+            font-size: 0.9rem;
+            width: 250px;
+            transition: all 0.3s;
+        }
+
+        .header-search input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .header-search input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            width: 300px;
+        }
+
+        .header-search i {
+            position: absolute;
+            left: 12px;
+            color: rgba(255,255,255,0.6);
         }
 
         .header-notifications {
@@ -117,65 +164,74 @@
         .notification-btn {
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: 8px 12px;
+            border-radius: 12px;
+            padding: 10px 12px;
             color: white;
             text-decoration: none;
             transition: all 0.2s;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .notification-btn:hover {
             background: rgba(255,255,255,0.2);
             color: white;
+            transform: translateY(-1px);
         }
 
         .notification-badge {
             position: absolute;
             top: -4px;
             right: -4px;
-            background: #ef4444;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             font-size: 0.7rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 600;
+            border: 2px solid #1e293b;
         }
 
         .user-dropdown {
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 8px 16px;
             color: white;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: all 0.2s;
-            min-width: 200px;
+            transition: all 0.3s;
+            min-width: 220px;
+            backdrop-filter: blur(10px);
         }
 
         .user-dropdown:hover {
             background: rgba(255,255,255,0.2);
             color: white;
             text-decoration: none;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
         .user-avatar {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
+            border: 2px solid rgba(255,255,255,0.2);
         }
 
         .user-info {
@@ -184,7 +240,8 @@
 
         .user-name {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
         }
 
         .user-role {
@@ -193,13 +250,53 @@
             color: #94a3b8;
         }
 
+        .dropdown-chevron {
+            transition: transform 0.2s;
+            opacity: 0.7;
+        }
+
+        .user-dropdown:hover .dropdown-chevron {
+            transform: rotate(180deg);
+        }
+
         .dropdown-menu {
             border: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border-radius: 12px;
-            padding: 8px 0;
-            min-width: 220px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            border-radius: 16px;
+            padding: 12px 0;
+            min-width: 240px;
             margin-top: 8px;
+            backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.95);
+        }
+
+        .dropdown-header {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 8px;
+        }
+
+        .dropdown-header .user-avatar {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 8px;
+        }
+
+        .dropdown-header .user-name {
+            font-size: 1rem;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .dropdown-header .user-email {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header .user-role {
+            font-size: 0.75rem;
+            color: #9ca3af;
         }
 
         .dropdown-item {
@@ -209,6 +306,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            font-weight: 500;
         }
 
         .dropdown-item:hover {
@@ -218,8 +316,14 @@
         }
 
         .dropdown-item i {
-            width: 16px;
+            width: 18px;
             text-align: center;
+            opacity: 0.7;
+        }
+
+        .dropdown-divider {
+            margin: 8px 0;
+            border-color: #e5e7eb;
         }
 
         /* Enhanced Sidebar */
@@ -235,6 +339,7 @@
             overflow-y: auto;
             z-index: 999;
             box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -253,13 +358,13 @@
 
         .sidebar-brand i {
             background: linear-gradient(45deg, #3b82f6, #8b5cf6);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 1.2rem;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 1.3rem;
         }
 
         .sidebar-brand h3 {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
             margin: 0;
         }
@@ -283,12 +388,13 @@
         .sidebar-nav a {
             display: flex;
             align-items: center;
-            padding: 14px 20px;
+            padding: 16px 20px;
             color: rgba(255,255,255,0.8);
             text-decoration: none;
             transition: all 0.3s;
             border-left: 3px solid transparent;
             position: relative;
+            font-weight: 500;
         }
 
         .sidebar-nav a:hover {
@@ -780,7 +886,6 @@
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
-                transition: transform 0.3s;
             }
 
             .sidebar.show {
@@ -790,6 +895,14 @@
             .main-content,
             .header-content {
                 margin-left: 0;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .header-search {
+                display: none;
             }
 
             .page-header {
@@ -827,16 +940,27 @@
     <div class="app-header">
         <div class="header-content">
             <div class="header-left">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
                 <div class="breadcrumb-nav">
-                    <a href="{{ route('dashboard') }}">Dashboard</a>
+                    <a href="{{ route('dashboard') }}">
+                        <i class="fas fa-home"></i>
+                    </a>
                     @if(!request()->routeIs('dashboard'))
-                        <i class="fas fa-chevron-right"></i>
-                        <span>@yield('title', 'Page')</span>
+                        <span class="separator">•</span>
+                        <span class="breadcrumb-current">@yield('title', 'Page')</span>
                     @endif
                 </div>
             </div>
             
             <div class="header-right">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search anything...">
+                </div>
+                
                 <div class="header-notifications">
                     <a href="#" class="notification-btn">
                         <i class="fas fa-bell"></i>
@@ -847,25 +971,73 @@
                 <div class="dropdown">
                     <a href="#" class="user-dropdown" data-bs-toggle="dropdown">
                         <div class="user-avatar">
-                            {{ strtoupper(substr(auth('employee')->user()->name, 0, 2)) }}
+                            @if(auth('employee')->check())
+                                {{ strtoupper(substr(auth('employee')->user()->name, 0, 2)) }}
+                            @else
+                                AD
+                            @endif
                         </div>
                         <div class="user-info">
-                            <div class="user-name">{{ auth('employee')->user()->name }}</div>
+                            <div class="user-name">
+                                @if(auth('employee')->check())
+                                    {{ auth('employee')->user()->name }}
+                                @else
+                                    Admin User
+                                @endif
+                            </div>
                             <div class="user-role">
-                                {{ auth('employee')->user()->roles->pluck('name')->join(', ') }}
+                                @if(auth('employee')->check() && auth('employee')->user()->roles->count() > 0)
+                                    {{ auth('employee')->user()->roles->pluck('name')->join(', ') }}
+                                @else
+                                    Administrator
+                                @endif
                             </div>
                         </div>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-down dropdown-chevron"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="dropdown-header">
+                            <div class="user-avatar">
+                                @if(auth('employee')->check())
+                                    {{ strtoupper(substr(auth('employee')->user()->name, 0, 2)) }}
+                                @else
+                                    AD
+                                @endif
+                            </div>
+                            <div class="user-name">
+                                @if(auth('employee')->check())
+                                    {{ auth('employee')->user()->name }}
+                                @else
+                                    Admin User
+                                @endif
+                            </div>
+                            <div class="user-email">
+                                @if(auth('employee')->check())
+                                    {{ auth('employee')->user()->email }}
+                                @else
+                                    admin@nexitel.com
+                                @endif
+                            </div>
+                            <div class="user-role">
+                                @if(auth('employee')->check() && auth('employee')->user()->roles->count() > 0)
+                                    {{ auth('employee')->user()->roles->pluck('name')->join(', ') }}
+                                @else
+                                    Administrator
+                                @endif
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{{ route('profile.edit') }}">
                             <i class="fas fa-user"></i> Profile Settings
                         </a></li>
-                        @if(auth('employee')->user()->hasRole('Super Admin'))
+                        @if(auth('employee')->check() && auth('employee')->user()->hasRole('Super Admin'))
                         <li><a class="dropdown-item" href="{{ route('roles.index') }}">
                             <i class="fas fa-users-cog"></i> Role Management
                         </a></li>
                         @endif
+                        <li><a class="dropdown-item" href="#">
+                            <i class="fas fa-cog"></i> Account Settings
+                        </a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
@@ -882,7 +1054,7 @@
     </div>
 
     <!-- Enhanced Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="{{ route('dashboard') }}" class="sidebar-brand">
                 <i class="fas fa-store"></i>
@@ -934,7 +1106,7 @@
             </a></li>
             @endcan
             
-            @if(auth('employee')->user()->hasRole('Super Admin'))
+            @if(auth('employee')->check() && auth('employee')->user()->hasRole('Super Admin'))
             <li><a href="{{ route('roles.index') }}" class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
                 <i class="fas fa-users-cog"></i> Role Management
             </a></li>
@@ -969,6 +1141,24 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !toggle.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+    </script>
     
     @stack('scripts')
 </body>

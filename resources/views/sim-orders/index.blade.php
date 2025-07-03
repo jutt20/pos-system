@@ -1,25 +1,29 @@
 @extends('layouts.app')
 
-@section('title', 'SIM Orders Management')
+@section('title', 'SIM Orders')
 
 @section('content')
 <div class="main-container">
+    <!-- Page Header -->
     <div class="page-header">
         <div class="page-header-content">
             <h1 class="page-title">
                 <i class="fas fa-shopping-cart"></i>
                 SIM Orders Management
             </h1>
-            <p class="page-subtitle">Track and manage SIM card orders and inventory</p>
+            <p class="page-subtitle">Manage and track all SIM card purchase orders</p>
         </div>
         <div class="header-actions">
-            <div class="search-box">
-                <input type="text" class="form-control" placeholder="Search orders..." id="searchInput">
-            </div>
+            @can('manage orders')
             <a href="{{ route('sim-orders.create') }}" class="btn-primary">
                 <i class="fas fa-plus"></i>
-                Create Order
+                New SIM Order
             </a>
+            @endcan
+            <button class="btn-secondary" onclick="exportOrders()">
+                <i class="fas fa-download"></i>
+                Export
+            </button>
         </div>
     </div>
 
@@ -31,42 +35,26 @@
             </div>
             <div class="stat-content">
                 <div class="stat-label">Total Orders</div>
-                <div class="stat-value">{{ $orders->count() }}</div>
+                <div class="stat-value blue">{{ $orders->count() }}</div>
                 <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +5 this week
+                    <i class="fas fa-arrow-up"></i> +12% from last month
                 </div>
             </div>
         </div>
-
+        
         <div class="stat-card">
             <div class="stat-icon green">
-                <i class="fas fa-dollar-sign"></i>
+                <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-content">
-                <div class="stat-label">Total Value</div>
-                <div class="stat-value green">${{ number_format($orders->sum('total_cost'), 2) }}</div>
+                <div class="stat-label">Delivered Orders</div>
+                <div class="stat-value green">{{ $orders->where('status', 'delivered')->count() }}</div>
                 <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +12% this month
+                    <i class="fas fa-arrow-up"></i> +8% from last month
                 </div>
             </div>
         </div>
-
-        <div class="stat-card">
-            <div class="stat-icon purple">
-                <i class="fas fa-sim-card"></i>
-            </div>
-            <div class="stat-content">
-                <div class="stat-label">Total SIMs</div>
-                <div class="stat-value">{{ number_format($orders->sum('quantity')) }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    Inventory count
-                </div>
-            </div>
-        </div>
-
+        
         <div class="stat-card">
             <div class="stat-icon orange">
                 <i class="fas fa-clock"></i>
@@ -75,20 +63,41 @@
                 <div class="stat-label">Pending Orders</div>
                 <div class="stat-value">{{ $orders->where('status', 'pending')->count() }}</div>
                 <div class="stat-change">
-                    Awaiting delivery
+                    <i class="fas fa-minus"></i> No change
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon purple">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Total Value</div>
+                <div class="stat-value">${{ number_format($orders->sum('total_cost'), 2) }}</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +15% from last month
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Orders Table -->
+    <!-- Filters and Search -->
     <div class="content-section">
         <div class="section-header">
-            <h3 class="section-title">
-                <i class="fas fa-list"></i>
-                All Orders
-            </h3>
-            <div class="section-actions">
+            <h2 class="section-title">
+                <i class="fas fa-filter"></i>
+                Filter & Search Orders
+            </h2>
+        </div>
+        
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="search-box">
+                    <input type="text" class="form-control" id="searchOrders" placeholder="Search orders...">
+                </div>
+            </div>
+            <div class="col-md-2">
                 <select class="form-select" id="statusFilter">
                     <option value="">All Status</option>
                     <option value="pending">Pending</option>
@@ -96,119 +105,240 @@
                     <option value="cancelled">Cancelled</option>
                 </select>
             </div>
+            <div class="col-md-2">
+                <select class="form-select" id="brandFilter">
+                    <option value="">All Brands</option>
+                    @foreach($orders->pluck('brand')->unique() as $brand)
+                    <option value="{{ $brand }}">{{ $brand }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" id="customerFilter">
+                    <option value="">All Customers</option>
+                    @foreach($orders->pluck('customer.name')->unique() as $customerName)
+                    <option value="{{ $customerName }}">{{ $customerName }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="content-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-list"></i>
+                SIM Orders List
+            </h2>
+            <div class="section-actions">
+                <span class="badge bg-primary">{{ $orders->count() }} Total Orders</span>
+            </div>
         </div>
 
+        @if($orders->count() > 0)
         <div class="table-responsive">
             <table class="data-table" id="ordersTable">
                 <thead>
                     <tr>
-                        <th>Order #</th>
+                        <th>Order ID</th>
                         <th>Customer</th>
                         <th>Brand</th>
                         <th>SIM Type</th>
                         <th>Quantity</th>
                         <th>Unit Cost</th>
                         <th>Total Cost</th>
+                        <th>Vendor</th>
                         <th>Status</th>
-                        <th>Order Date</th>
+                        <th>Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($orders as $order)
-                    <tr data-status="{{ $order->status }}">
+                    @foreach($orders as $order)
+                    <tr>
                         <td>
-                            <span class="fw-bold text-primary">
-                                #{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}
-                            </span>
+                            <strong>#{{ $order->id }}</strong>
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="user-avatar me-3" style="width: 40px; height: 40px; font-size: 0.8rem;">
-                                    {{ strtoupper(substr($order->customer->name, 0, 2)) }}
+                                <div class="user-avatar me-2" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    @if($order->customer)
+                                        {{ strtoupper(substr($order->customer->name, 0, 2)) }}
+                                    @else
+                                        N/A
+                                    @endif
                                 </div>
                                 <div>
-                                    <div class="fw-bold">{{ $order->customer->name }}</div>
+                                    <div class="fw-semibold">
+                                        @if($order->customer)
+                                            {{ $order->customer->name }}
+                                        @else
+                                            <span class="text-muted">No Customer</span>
+                                        @endif
+                                    </div>
+                                    @if($order->customer && $order->customer->email)
                                     <small class="text-muted">{{ $order->customer->email }}</small>
+                                    @endif
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <span class="badge" style="background: linear-gradient(45deg, #3b82f6, #8b5cf6); color: white;">
+                            <span class="badge" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">
                                 {{ $order->brand }}
                             </span>
                         </td>
                         <td>{{ $order->sim_type }}</td>
                         <td>
-                            <span class="badge bg-secondary">{{ number_format($order->quantity) }}</span>
+                            <span class="fw-bold">{{ number_format($order->quantity) }}</span>
                         </td>
                         <td>${{ number_format($order->unit_cost, 2) }}</td>
-                        <td class="fw-bold text-success">${{ number_format($order->total_cost, 2) }}</td>
                         <td>
-                            <span class="status-badge status-{{ $order->status }}">
-                                {{ ucfirst($order->status) }}
-                            </span>
+                            <span class="fw-bold text-success">${{ number_format($order->total_cost, 2) }}</span>
                         </td>
-                        <td>{{ $order->created_at->format('M j, Y') }}</td>
+                        <td>{{ $order->vendor }}</td>
+                        <td>
+                            @if($order->status == 'pending')
+                                <span class="status-badge status-pending">Pending</span>
+                            @elseif($order->status == 'delivered')
+                                <span class="status-badge status-delivered">Delivered</span>
+                            @elseif($order->status == 'cancelled')
+                                <span class="status-badge status-cancelled">Cancelled</span>
+                            @else
+                                <span class="status-badge">{{ ucfirst($order->status) }}</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div>{{ $order->created_at->format('M d, Y') }}</div>
+                            <small class="text-muted">{{ $order->created_at->format('h:i A') }}</small>
+                        </td>
                         <td>
                             <div class="action-buttons">
-                                <a href="{{ route('sim-orders.show', $order) }}" class="btn-sm btn-outline" title="View Details">
+                                <a href="{{ route('sim-orders.show', $order) }}" class="btn btn-sm btn-outline-primary" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('sim-orders.edit', $order) }}" class="btn-sm btn-outline" title="Edit Order">
+                                @can('manage orders')
+                                <a href="{{ route('sim-orders.edit', $order) }}" class="btn btn-sm btn-outline-secondary" title="Edit Order">
                                     <i class="fas fa-edit"></i>
                                 </a>
+                                <form method="POST" action="{{ route('sim-orders.destroy', $order) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Order">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="10" class="text-center">
-                            <div class="empty-state">
-                                <i class="fas fa-shopping-cart fa-3x"></i>
-                                <h5>No orders found</h5>
-                                <p>Start by creating your first SIM order</p>
-                                <a href="{{ route('sim-orders.create') }}" class="btn-primary">
-                                    <i class="fas fa-plus"></i>
-                                    Create First Order
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
+        @else
+        <div class="empty-state">
+            <i class="fas fa-shopping-cart fa-4x"></i>
+            <h5>No SIM Orders Found</h5>
+            <p>There are no SIM orders in the system yet.</p>
+            @can('manage orders')
+            <a href="{{ route('sim-orders.create') }}" class="btn-primary">
+                <i class="fas fa-plus"></i>
+                Create First Order
+            </a>
+            @endcan
+        </div>
+        @endif
     </div>
 </div>
-@endsection
 
 @push('scripts')
 <script>
-// Search functionality
-document.getElementById('searchInput').addEventListener('keyup', function() {
-    const searchTerm = this.value.toLowerCase();
-    const tableRows = document.querySelectorAll('#ordersTable tbody tr');
-    
-    tableRows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    // Search functionality
+    document.getElementById('searchOrders').addEventListener('keyup', function() {
+        filterTable();
     });
-});
 
-// Status filter
-document.getElementById('statusFilter').addEventListener('change', function() {
-    const selectedStatus = this.value.toLowerCase();
-    const tableRows = document.querySelectorAll('#ordersTable tbody tr[data-status]');
-    
-    tableRows.forEach(row => {
-        if (selectedStatus === '') {
-            row.style.display = '';
-        } else {
-            const status = row.getAttribute('data-status');
-            row.style.display = status === selectedStatus ? '' : 'none';
-        }
+    // Filter functionality
+    document.getElementById('statusFilter').addEventListener('change', function() {
+        filterTable();
     });
-});
+
+    document.getElementById('brandFilter').addEventListener('change', function() {
+        filterTable();
+    });
+
+    document.getElementById('customerFilter').addEventListener('change', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+        const brandFilter = document.getElementById('brandFilter').value.toLowerCase();
+        const customerFilter = document.getElementById('customerFilter').value.toLowerCase();
+        
+        const table = document.getElementById('ordersTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            let showRow = true;
+
+            // Search filter
+            if (searchTerm) {
+                const rowText = row.textContent.toLowerCase();
+                if (!rowText.includes(searchTerm)) {
+                    showRow = false;
+                }
+            }
+
+            // Status filter
+            if (statusFilter && showRow) {
+                const statusCell = cells[8].textContent.toLowerCase();
+                if (!statusCell.includes(statusFilter)) {
+                    showRow = false;
+                }
+            }
+
+            // Brand filter
+            if (brandFilter && showRow) {
+                const brandCell = cells[2].textContent.toLowerCase();
+                if (!brandCell.includes(brandFilter)) {
+                    showRow = false;
+                }
+            }
+
+            // Customer filter
+            if (customerFilter && showRow) {
+                const customerCell = cells[1].textContent.toLowerCase();
+                if (!customerCell.includes(customerFilter)) {
+                    showRow = false;
+                }
+            }
+
+            row.style.display = showRow ? '' : 'none';
+        }
+    }
+
+    function clearFilters() {
+        document.getElementById('searchOrders').value = '';
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('brandFilter').value = '';
+        document.getElementById('customerFilter').value = '';
+        filterTable();
+    }
+
+    function exportOrders() {
+        // This would typically trigger an export
+        alert('Export functionality would be implemented here');
+    }
 </script>
 @endpush
+@endsection
