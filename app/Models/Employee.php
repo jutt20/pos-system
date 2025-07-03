@@ -30,6 +30,11 @@ class Employee extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function assignedCustomers()
+    {
+        return $this->hasMany(Customer::class, 'assigned_employee_id');
+    }
+
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
@@ -38,5 +43,10 @@ class Employee extends Authenticatable
     public function activations()
     {
         return $this->hasMany(Activation::class);
+    }
+
+    public function simOrders()
+    {
+        return $this->hasMany(SimOrder::class);
     }
 }

@@ -13,26 +13,36 @@ class Customer extends Model
         'name',
         'email',
         'phone',
-        'company',
         'address',
-        'cnic',
+        'cnic', // Changed from id_number to cnic
         'balance',
         'prepaid_status',
         'status',
+        'assigned_employee_id',
     ];
+
+    public function assignedEmployee()
+    {
+        return $this->belongsTo(Employee::class, 'assigned_employee_id');
+    }
 
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
     }
 
-    public function documents()
-    {
-        return $this->hasMany(CustomerDocument::class);
-    }
-
     public function activations()
     {
         return $this->hasMany(Activation::class);
+    }
+
+    public function simOrders()
+    {
+        return $this->hasMany(SimOrder::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(CustomerDocument::class);
     }
 }

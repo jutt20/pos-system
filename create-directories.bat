@@ -1,15 +1,14 @@
 @echo off
-echo Creating required directories...
+echo Creating Laravel directories...
 
-mkdir storage\app 2>nul
-mkdir storage\app\public 2>nul
-mkdir storage\framework 2>nul
-mkdir storage\framework\cache 2>nul
-mkdir storage\framework\cache\data 2>nul
-mkdir storage\framework\sessions 2>nul
-mkdir storage\framework\views 2>nul
-mkdir storage\logs 2>nul
-mkdir bootstrap\cache 2>nul
+if not exist "storage\app" mkdir "storage\app"
+if not exist "storage\app\public" mkdir "storage\app\public"
+if not exist "storage\framework" mkdir "storage\framework"
+if not exist "storage\framework\cache" mkdir "storage\framework\cache"
+if not exist "storage\framework\cache\data" mkdir "storage\framework\cache\data"
+if not exist "storage\framework\sessions" mkdir "storage\framework\sessions"
+if not exist "storage\framework\views" mkdir "storage\framework\views"
+if not exist "storage\logs" mkdir "storage\logs"
+if not exist "bootstrap\cache" mkdir "bootstrap\cache"
 
 echo Directories created successfully!
-pause
