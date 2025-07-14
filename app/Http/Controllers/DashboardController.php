@@ -25,8 +25,8 @@ class DashboardController extends Controller
 
         // Monthly revenue chart data
         $monthlyRevenue = Invoice::where('status', 'paid')
-            ->selectRaw('MONTH(billing_date) as month, SUM(total_amount) as revenue')
-            ->whereYear('billing_date', date('Y'))
+            ->selectRaw('MONTH(invoice_date) as month, SUM(total_amount) as revenue')
+            ->whereYear('invoice_date', date('Y'))
             ->groupBy('month')
             ->orderBy('month')
             ->get();

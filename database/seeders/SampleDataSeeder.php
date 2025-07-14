@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
@@ -13,43 +14,40 @@ class SampleDataSeeder extends Seeder
 {
     public function run()
     {
-        // Create sample customers
-        $customers = [
-            [
-                'name' => 'John Smith',
-                'email' => 'john.smith@email.com',
-                'phone' => '+1-555-0101',
-                'address' => '123 Main St, New York, NY 10001',
-                'status' => 'active'
-            ],
-            [
-                'name' => 'Sarah Johnson',
-                'email' => 'sarah.johnson@email.com',
-                'phone' => '+1-555-0102',
-                'address' => '456 Oak Ave, Los Angeles, CA 90210',
-                'status' => 'active'
-            ],
-            [
-                'name' => 'Mike Davis',
-                'email' => 'mike.davis@email.com',
-                'phone' => '+1-555-0103',
-                'address' => '789 Pine St, Chicago, IL 60601',
-                'status' => 'active'
-            ]
-        ];
+        // Create sample customers and store them
+        $customer1 = Customer::create([
+            'name' => 'John Smith',
+            'email' => 'john.smith@email.com',
+            'password' => Hash::make('password'),
+            'phone' => '+1-555-0101',
+            'address' => '123 Main St, New York, NY 10001',
+            'status' => 'active',
+        ]);
 
-        foreach ($customers as $customerData) {
-            Customer::create($customerData);
-        }
+        $customer2 = Customer::create([
+            'name' => 'Sarah Johnson',
+            'email' => 'sarah.johnson@email.com',
+            'password' => Hash::make('password'),
+            'phone' => '+1-555-0102',
+            'address' => '456 Oak Ave, Los Angeles, CA 90210',
+            'status' => 'active',
+        ]);
 
-        // Get the first employee (should be super admin)
-        $employee = Employee::first();
-        
+        $customer3 = Customer::create([
+            'name' => 'Mike Davis',
+            'email' => 'mike.davis@email.com',
+            'password' => Hash::make('password'),
+            'phone' => '+1-555-0103',
+            'address' => '789 Pine St, Chicago, IL 60601',
+            'status' => 'active',
+        ]);
+
+        $employee = Employee::first(); // Get Super Admin or first available employee
+
         if ($employee) {
-            // Create sample invoices
             $invoices = [
                 [
-                    'customer_id' => 1,
+                    'customer' => $customer1,
                     'invoice_date' => Carbon::now()->subDays(10),
                     'due_date' => Carbon::now()->addDays(20),
                     'status' => 'paid',
@@ -60,7 +58,7 @@ class SampleDataSeeder extends Seeder
                     ]
                 ],
                 [
-                    'customer_id' => 2,
+                    'customer' => $customer2,
                     'invoice_date' => Carbon::now()->subDays(5),
                     'due_date' => Carbon::now()->addDays(25),
                     'status' => 'sent',
@@ -71,7 +69,7 @@ class SampleDataSeeder extends Seeder
                     ]
                 ],
                 [
-                    'customer_id' => 3,
+                    'customer' => $customer3,
                     'invoice_date' => Carbon::now()->subDays(2),
                     'due_date' => Carbon::now()->addDays(28),
                     'status' => 'draft',
@@ -97,12 +95,16 @@ class SampleDataSeeder extends Seeder
 
                 $invoice = Invoice::create([
                     'invoice_number' => Invoice::generateInvoiceNumber(),
+                    'customer_id' => $invoiceData['customer']->id,
                     'employee_id' => $employee->id,
+                    'invoice_date' => $invoiceData['invoice_date'],
+                    'due_date' => $invoiceData['due_date'],
+                    'status' => $invoiceData['status'],
+                    'payment_method' => $invoiceData['payment_method'],
                     'subtotal' => $subtotal,
                     'tax_amount' => $taxAmount,
                     'total_amount' => $totalAmount,
                     'notes' => 'Sample invoice created during seeding',
-                    ...$invoiceData
                 ]);
 
                 foreach ($items as $item) {

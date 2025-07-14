@@ -11,6 +11,8 @@ class Employee extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
 
+    protected $guard_name = 'employee';
+
     protected $fillable = [
         'name',
         'email',

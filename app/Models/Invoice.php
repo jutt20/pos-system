@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Invoice extends Model
 {
@@ -49,10 +50,11 @@ class Invoice extends Model
 
     public static function generateInvoiceNumber()
     {
-        $lastInvoice = self::latest()->first();
-        $number = $lastInvoice ? intval(substr($lastInvoice->invoice_number, 4)) + 1 : 1;
-        return 'INV-' . str_pad($number, 6, '0', STR_PAD_LEFT);
+        $lastNumber = self::max(DB::raw("CAST(SUBSTRING(invoice_number, 5) AS UNSIGNED)")) ?? 0;
+        $next = $lastNumber + 1;
+        return 'INV-' . str_pad($next, 6, '0', STR_PAD_LEFT);
     }
+
 
     public function getFormattedInvoiceDateAttribute()
     {

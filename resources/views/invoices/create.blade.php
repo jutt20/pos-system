@@ -27,9 +27,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="billing_date" class="form-label">Billing Date *</label>
-                    <input type="date" id="billing_date" name="billing_date" class="form-control" value="{{ old('billing_date', date('Y-m-d')) }}" required>
-                    @error('billing_date')
+                    <label for="invoice_date" class="form-label">Billing Date *</label>
+                    <input type="date" id="invoice_date" name="invoice_date" class="form-control" value="{{ old('invoice_date', date('Y-m-d')) }}" required>
+                    @error('invoice_date')
                         <div class="text-danger small">{{ $message }}</div>
                     @enderror
                 </div>

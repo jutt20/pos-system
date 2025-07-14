@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('unit_cost', 10, 2);
             $table->decimal('total_cost', 10, 2);
             $table->string('vendor');
-            $table->enum('status', ['pending', 'delivered', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'delivered', 'cancelled', 'shipped', 'processing'])->default('pending');
             $table->text('notes')->nullable();
             $table->date('order_date')->default(now());
             $table->timestamps();

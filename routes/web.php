@@ -10,6 +10,9 @@ use App\Http\Controllers\SimOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\SimStockController;
+use App\Http\Controllers\SimStockExportController;
+use App\Http\Controllers\SimStockImportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,6 +82,14 @@ Route::middleware(['auth:employee'])->group(function () {
     Route::middleware(['permission:manage orders'])->group(function () {
         Route::resource('sim-orders', SimOrderController::class);
         Route::post('/sim-orders/{simOrder}/fulfill', [SimOrderController::class, 'fulfill'])->name('sim-orders.fulfill');
+    });
+
+    // SIM Stock Management - Managers and above
+    Route::middleware(['permission:manage sim stock'])->group(function () {
+        Route::post('/sim-stocks/import', [SimStockImportController::class, 'import'])->name('sim-stocks.import');
+        Route::get('sim-stocks/export', [SimStockExportController::class, 'export'])->name('sim-stocks.export');
+        Route::resource('sim-stocks', SimStockController::class);
+        Route::post('/sim-stocks/{simStock}/restock', [SimStockController::class, 'restock'])->name('sim-stocks.restock');
     });
     
     // Reports - Managers and above

@@ -50,7 +50,7 @@ class InvoicesSheet implements FromCollection, WithHeadings, WithTitle
                 return [
                     'invoice_number' => $invoice->invoice_number,
                     'customer_name' => $invoice->customer->name,
-                    'billing_date' => $invoice->billing_date,
+                    'invoice_date' => $invoice->invoice_date,
                     'total_amount' => $invoice->total_amount,
                     'status' => $invoice->status,
                     'created_at' => $invoice->created_at,

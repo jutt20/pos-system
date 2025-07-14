@@ -25,7 +25,7 @@
                 <a href="{{ route('customers.index') }}" class="btn-link">View All</a>
             </div>
         </div>
-        
+
         <div class="stat-card">
             <div class="stat-icon green">
                 <i class="fas fa-dollar-sign"></i>
@@ -38,7 +38,7 @@
                 <a href="{{ route('reports.index') }}" class="btn-link">View Reports</a>
             </div>
         </div>
-        
+
         <div class="stat-card">
             <div class="stat-icon blue">
                 <i class="fas fa-file-invoice"></i>
@@ -51,7 +51,7 @@
                 <a href="{{ route('invoices.index') }}" class="btn-link">View All</a>
             </div>
         </div>
-        
+
         <div class="stat-card">
             <div class="stat-icon purple">
                 <i class="fas fa-sim-card"></i>
@@ -77,7 +77,7 @@
                 <div class="quick-action-title">Add Customer</div>
                 <div class="quick-action-desc">Create a new customer account</div>
             </a>
-            
+
             <a href="{{ route('invoices.create') }}" class="quick-action-card">
                 <div class="quick-action-icon">
                     <i class="fas fa-file-invoice-dollar"></i>
@@ -85,7 +85,7 @@
                 <div class="quick-action-title">Create Invoice</div>
                 <div class="quick-action-desc">Generate a new invoice</div>
             </a>
-            
+
             <a href="{{ route('activations.create') }}" class="quick-action-card">
                 <div class="quick-action-icon">
                     <i class="fas fa-mobile-alt"></i>
@@ -93,7 +93,7 @@
                 <div class="quick-action-title">New Activation</div>
                 <div class="quick-action-desc">Activate a new SIM card</div>
             </a>
-            
+
             <a href="{{ route('sim-orders.create') }}" class="quick-action-card">
                 <div class="quick-action-icon">
                     <i class="fas fa-shopping-cart"></i>
@@ -127,7 +127,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-6">
             <div class="content-section">
                 <h2 class="section-title">Recent Invoices</h2>
@@ -158,255 +158,252 @@
 
 @push('scripts')
 <script>
-// Revenue Chart
-const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-const revenueChart = new Chart(revenueCtx, {
-    type: 'line',
-    data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        datasets: [{
-            label: 'Revenue',
-            data: [
-                @foreach(range(1, 12) as $month)
-                    {{ $monthlyRevenue->where('month', $month)->first()->revenue ?? 0 }},
-                @endforeach
-            ],
-            borderColor: 'rgb(75, 192, 192)',
-            backgroundColor: 'rgba(75, 192, 192, 0.1)',
-            tension: 0.1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Revenue',
+                data: [
+                    @foreach(range(1, 12) as $month) {
+                        {
+                            $monthlyRevenue - > where('month', $month) - > first() - > revenue ?? 0
+                        }
+                    },
+                    @endforeach
+                ],
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
             }
         }
-    }
-});
+    });
 
-// Brand Chart
-const brandCtx = document.getElementById('brandChart').getContext('2d');
-const brandChart = new Chart(brandCtx, {
-    type: 'doughnut',
-    data: {
-        labels: [
-            @foreach($activationsByBrand as $brand)
-                '{{ $brand->brand }}',
-            @endforeach
-        ],
-        datasets: [{
-            data: [
+    // Brand Chart
+    const brandCtx = document.getElementById('brandChart').getContext('2d');
+    const brandChart = new Chart(brandCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [
                 @foreach($activationsByBrand as $brand)
-                    {{ $brand->count }},
+                '{{ $brand->brand }}',
                 @endforeach
             ],
-            backgroundColor: [
-                '#FF6384',
-                '#36A2EB',
-                '#FFCE56',
-                '#4BC0C0',
-                '#9966FF',
-                '#FF9F40'
-            ]
-        }]
-    },
-    options: {
-        responsive: true
-    }
-});
+            datasets: [{
+                data: [
+                    @foreach($activationsByBrand as $brand) {
+                        {
+                            $brand - > count
+                        }
+                    },
+                    @endforeach
+                ],
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40'
+                ]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
 </script>
 @endpush
 
 <style>
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
 
-.stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
+    .stat-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 180px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
 
-.stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    background: #f3f4f6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: #6b7280;
-}
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: rgb(223, 237, 17);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: #374151;
+        margin-bottom: 16px;
+    }
 
-.stat-icon.green {
-    background: #dcfce7;
-    color: #16a34a;
-}
+    .stat-content {
+        flex-grow: 1;
+        text-align: center;
+    }
 
-.stat-icon.blue {
-    background: #dbeafe;
-    color: #2563eb;
-}
+    .stat-label {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 6px;
+    }
 
-.stat-icon.purple {
-    background: #f3e8ff;
-    color: #9333ea;
-}
+    .stat-value {
+        font-size: 26px;
+        font-weight: 700;
+        color: #111827;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
-.stat-content {
-    flex: 1;
-}
+    .stat-value.green {
+        color: #16a34a;
+    }
 
-.stat-label {
-    font-size: 14px;
-    color: #6b7280;
-    margin-bottom: 4px;
-}
+    .stat-action {
+        margin-top: 20px;
+    }
 
-.stat-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: #111827;
-}
+    .btn-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
 
-.stat-value.green {
-    color: #16a34a;
-}
+    .btn-link:hover {
+        text-decoration: underline;
+    }
 
-.stat-action {
-    margin-left: auto;
-}
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
 
-.btn-link {
-    color: #2563eb;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-}
+    .quick-action-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-align: center;
+    }
 
-.btn-link:hover {
-    text-decoration: underline;
-}
+    .quick-action-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+        color: inherit;
+    }
 
-.quick-actions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
+    .quick-action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #2563eb;
+        margin: 0 auto 16px;
+    }
 
-.quick-action-card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.2s, box-shadow 0.2s;
-    text-align: center;
-}
+    .quick-action-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
 
-.quick-action-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    text-decoration: none;
-    color: inherit;
-}
+    .quick-action-desc {
+        font-size: 14px;
+        color: #6b7280;
+    }
 
-.quick-action-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    background: #f3f4f6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: #2563eb;
-    margin: 0 auto 16px;
-}
+    .recent-items {
+        space-y: 12px;
+    }
 
-.quick-action-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
+    .recent-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
 
-.quick-action-desc {
-    font-size: 14px;
-    color: #6b7280;
-}
+    .recent-item:last-child {
+        border-bottom: none;
+    }
 
-.recent-items {
-    space-y: 12px;
-}
+    .recent-item-avatar .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #374151;
+    }
 
-.recent-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid #f3f4f6;
-}
+    .recent-item-avatar .avatar-circle.green {
+        background: #dcfce7;
+        color: #16a34a;
+    }
 
-.recent-item:last-child {
-    border-bottom: none;
-}
+    .recent-item-content {
+        flex: 1;
+    }
 
-.recent-item-avatar .avatar-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #f3f4f6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #374151;
-}
+    .recent-item-title {
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
 
-.recent-item-avatar .avatar-circle.green {
-    background: #dcfce7;
-    color: #16a34a;
-}
+    .recent-item-subtitle {
+        font-size: 14px;
+        color: #6b7280;
+    }
 
-.recent-item-content {
-    flex: 1;
-}
+    .recent-item-meta {
+        text-align: right;
+    }
 
-.recent-item-title {
-    font-weight: 500;
-    margin-bottom: 2px;
-}
-
-.recent-item-subtitle {
-    font-size: 14px;
-    color: #6b7280;
-}
-
-.recent-item-meta {
-    text-align: right;
-}
-
-.recent-item-amount {
-    font-weight: 600;
-    margin-bottom: 4px;
-}
+    .recent-item-amount {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
 </style>

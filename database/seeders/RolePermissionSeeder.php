@@ -93,34 +93,34 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         // Create Super Admin user
-        $superAdmin = Employee::create([
-            'name' => 'Super Administrator',
-            'email' => 'superadmin@nexitel.com',
-            'username' => 'superadmin',
-            'password' => Hash::make('superadmin123'),
-            'phone' => '+1234567888',
-        ]);
-        $superAdmin->assignRole('Super Admin');
+        // $superAdmin = Employee::create([
+        //     'name' => 'Super Administrator',
+        //     'email' => 'superadmin@nexitel.com',
+        //     'username' => 'superadmin',
+        //     'password' => Hash::make('superadmin123'),
+        //     'phone' => '+1234567888',
+        // ]);
+        // $superAdmin->assignRole('Super Admin');
 
         // Create default admin user
-        $admin = Employee::create([
-            'name' => 'System Administrator',
-            'email' => 'admin@nexitel.com',
-            'username' => 'admin',
-            'password' => Hash::make('password'),
-            'phone' => '+1234567890',
-        ]);
-        $admin->assignRole('Admin');
+        // $admin = Employee::create([
+        //     'name' => 'System Administrator',
+        //     'email' => 'admin@nexitel.com',
+        //     'username' => 'admin',
+        //     'password' => Hash::make('password'),
+        //     'phone' => '+1234567890',
+        // ]);
+        // $admin->assignRole('Admin');
 
         // Create sample employees
-        $manager = Employee::create([
-            'name' => 'John Manager',
-            'email' => 'manager@nexitel.com',
-            'username' => 'manager',
-            'password' => Hash::make('password'),
-            'phone' => '+1234567891',
-        ]);
-        $manager->assignRole('Manager');
+        // $manager = Employee::create([
+        //     'name' => 'John Manager',
+        //     'email' => 'manager@nexitel.com',
+        //     'username' => 'manager',
+        //     'password' => Hash::make('password'),
+        //     'phone' => '+1234567891',
+        // ]);
+        // $manager->assignRole('Manager');
 
         $accountant = Employee::create([
             'name' => 'Sarah Accountant',
@@ -131,14 +131,14 @@ class RolePermissionSeeder extends Seeder
         ]);
         $accountant->assignRole('Accountant');
 
-        $sales = Employee::create([
-            'name' => 'Mike Sales',
-            'email' => 'sales@nexitel.com',
-            'username' => 'sales',
-            'password' => Hash::make('password'),
-            'phone' => '+1234567893',
-        ]);
-        $sales->assignRole('Sales Agent');
+        // $sales = Employee::create([
+        //     'name' => 'Mike Sales',
+        //     'email' => 'sales@nexitel.com',
+        //     'username' => 'sales',
+        //     'password' => Hash::make('password'),
+        //     'phone' => '+1234567893',
+        // ]);
+        // $sales->assignRole('Sales Agent');
 
         $support = Employee::create([
             'name' => 'Lisa Support',
