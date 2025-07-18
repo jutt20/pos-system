@@ -21,14 +21,14 @@ class CustomerLoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
         
         $credentials = [
             $loginField => $request->login,
             'password' => $request->password,
         ];
 
-        if (Auth::guard('customer')->attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::guard('customer')->attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('customer.dashboard'));
         }

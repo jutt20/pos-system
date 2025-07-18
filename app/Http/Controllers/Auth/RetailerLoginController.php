@@ -23,11 +23,11 @@ class RetailerLoginController extends Controller
 
         $credentials = $request->only('username', 'password');
 
-        if (Auth::guard('employee')->attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::guard('employee')->attempt($credentials, $request->filled('remember'))) {
             $user = Auth::guard('employee')->user();
             
             // Check if user has retailer role
-            if ($user->hasRole('retailer')) {
+            if ($user->hasRole('Retailer')) {
                 $request->session()->regenerate();
                 return redirect()->intended(route('retailer.dashboard'));
             } else {

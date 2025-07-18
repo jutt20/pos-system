@@ -5,14 +5,14 @@ namespace Database\Seeders;
 use App\Models\ChatRoom;
 use App\Models\ChatMessage;
 use App\Models\ChatParticipant;
-use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Database\Seeder;
 
 class ChatSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::all();
+        $users = Employee::all();
         
         if ($users->count() < 2) {
             return; // Need at least 2 users for chat

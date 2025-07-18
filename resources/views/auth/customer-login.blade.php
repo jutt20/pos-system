@@ -51,14 +51,12 @@
         }
 
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            max-width: 400px;
             width: 100%;
+            max-width: 400px;
             display: flex;
             position: relative;
             z-index: 1;
@@ -77,10 +75,15 @@
         }
 
         .login-header {
-            background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 2rem;
             text-align: center;
+        }
+
+        .login-header h2 {
+            margin: 0;
+            font-weight: 300;
         }
 
         .login-body {
@@ -101,32 +104,29 @@
         }
 
         .form-control {
-            border: none;
-            border-bottom: 2px solid #e9ecef;
-            border-radius: 0;
-            padding: 0.75rem 0;
-            background: transparent;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 16px;
+            transition: all 0.3s;
         }
 
         .form-control:focus {
             outline: none;
-            border-bottom-color: #8360c3;
-            background: transparent;
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
 
         .btn-login {
-            width: 100%;
-            padding: 0.75rem 2rem;
-            background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%);
-            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            border-radius: 50px;
-            font-size: 1rem;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            color: white;
+            width: 100%;
+            transition: all 0.3s;
             margin-top: 1rem;
             position: relative;
             overflow: hidden;
@@ -149,7 +149,8 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(131, 96, 195, 0.3);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
         }
 
         .btn-login:active {
@@ -172,8 +173,8 @@
         }
 
         .form-check-input:checked {
-            background-color: #8360c3;
-            border-color: #8360c3;
+            background-color: #667eea;
+            border-color: #667eea;
         }
 
         .form-check-label {
@@ -197,14 +198,14 @@
         }
 
         .portal-links a {
-            color: #8360c3;
+            color: #667eea;
             text-decoration: none;
-            margin: 0 0.5rem;
+            margin: 0 10px;
             font-weight: 500;
         }
 
         .portal-links a:hover {
-            color: #2ebf91;
+            color: #764ba2;
         }
 
         .input-group {
@@ -212,17 +213,14 @@
             margin-bottom: 1.5rem;
         }
 
-        .input-group i {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #8360c3;
-            z-index: 10;
+        .input-group-text {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-right: none;
         }
 
-        .input-group .form-control {
-            padding-left: 2rem;
+        .form-control.with-icon {
+            border-left: none;
         }
 
         .alert {
@@ -307,7 +305,7 @@
 
     <div class="login-container">
         <div class="login-header">
-            <i class="fas fa-users fa-3x mb-3"></i>
+            <i class="fas fa-user fa-3x mb-3"></i>
             <h2>Customer Portal</h2>
             <p class="mb-0">Access your account</p>
         </div>
@@ -316,23 +314,31 @@
             <form method="POST" action="{{ route('customer.login') }}" id="loginForm">
                 @csrf
                 
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input id="username" type="text" class="form-control @error('login') is-invalid @enderror" name="login" value="{{ old('login') }}" placeholder="Email or Username" required autofocus autocomplete="username">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <input id="username" type="text" class="form-control with-icon @error('login') is-invalid @enderror" name="login" value="{{ old('login') }}" placeholder="Email or Phone" required autofocus autocomplete="username">
+                    </div>
                     @error('login')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="Password" required autocomplete="current-password">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input id="password" type="password" class="form-control with-icon @error('password') is-invalid @enderror" name="password" placeholder="Password" required autocomplete="current-password">
+                    </div>
                     @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="form-check mb-3">
+                <div class="mb-3 form-check">
                     <input class="form-check-input" type="checkbox" name="remember" id="remember_me">
                     <label class="form-check-label" for="remember_me">
                         Remember me

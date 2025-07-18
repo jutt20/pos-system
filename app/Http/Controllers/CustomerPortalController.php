@@ -18,39 +18,23 @@ class CustomerPortalController extends Controller
     {
         $customer = Auth::guard('customer')->user();
         
-        // Get customer statistics
-        $totalInvoices = $customer->invoices()->count();
-        $paidInvoices = $customer->invoices()->where('status', 'paid')->count();
-        $pendingInvoices = $customer->invoices()->where('status', 'draft')->count();
-        $overdueInvoices = $customer->invoices()->where('status', 'overdue')->count();
-        
         $totalSpent = $customer->invoices()->where('status', 'paid')->sum('total_amount');
-        $currentBalance = $customer->balance;
-        
+        $pendingInvoices = $customer->invoices()->where('status', '!=', 'paid')->count();
         $activeServices = $customer->activations()->where('status', 'active')->count();
         
-        // Recent invoices
         $recentInvoices = $customer->invoices()
-            ->with('employee')
             ->latest()
             ->take(5)
             ->get();
             
-        // Recent activations
         $recentActivations = $customer->activations()
-            ->with('employee')
             ->latest()
             ->take(5)
             ->get();
 
         return view('customer-portal.dashboard', compact(
-            'customer',
-            'totalInvoices',
-            'paidInvoices',
-            'pendingInvoices',
-            'overdueInvoices',
             'totalSpent',
-            'currentBalance',
+            'pendingInvoices',
             'activeServices',
             'recentInvoices',
             'recentActivations'
@@ -60,22 +44,16 @@ class CustomerPortalController extends Controller
     public function invoices()
     {
         $customer = Auth::guard('customer')->user();
-        $invoices = $customer->invoices()
-            ->with('employee')
-            ->latest()
-            ->paginate(15);
-
+        $invoices = $customer->invoices()->latest()->paginate(10);
+        
         return view('customer-portal.invoices', compact('invoices'));
     }
 
     public function activations()
     {
         $customer = Auth::guard('customer')->user();
-        $activations = $customer->activations()
-            ->with('employee')
-            ->latest()
-            ->paginate(15);
-
+        $activations = $customer->activations()->latest()->paginate(10);
+        
         return view('customer-portal.activations', compact('activations'));
     }
 
@@ -92,15 +70,17 @@ class CustomerPortalController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:customers,email,' . $customer->id,
-            'phone' => 'nullable|string|max:20',
-            'company' => 'nullable|string|max:255',
+            'phone' => 'required|string|max:20',
             'address' => 'nullable|string',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'zip_code' => 'nullable|string|max:20',
         ]);
 
         $customer->update($request->only([
-            'name', 'email', 'phone', 'company', 'address'
+            'name', 'email', 'phone', 'address', 'city', 'state', 'zip_code'
         ]));
 
-        return back()->with('success', 'Profile updated successfully!');
+        return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 }

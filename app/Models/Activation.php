@@ -11,25 +11,19 @@ class Activation extends Model
 
     protected $fillable = [
         'customer_id',
-        'employee_id',
-        'created_by',
-        'brand',
-        'plan',
-        'sku',
-        'quantity',
-        'price',
-        'cost',
-        'profit',
+        'phone_number',
+        'sim_number',
+        'plan_name',
+        'plan_price',
         'activation_date',
         'status',
         'notes',
+        'created_by'
     ];
 
     protected $casts = [
         'activation_date' => 'date',
-        'price' => 'decimal:2',
-        'cost' => 'decimal:2',
-        'profit' => 'decimal:2',
+        'plan_price' => 'decimal:2',
     ];
 
     public function customer()
@@ -37,24 +31,30 @@ class Activation extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class);
-    }
-
     public function createdBy()
     {
         return $this->belongsTo(Employee::class, 'created_by');
     }
 
-    public function getStatusColorAttribute()
+    public function getStatusBadgeAttribute()
     {
-        return match($this->status) {
-            'pending' => 'yellow',
-            'active' => 'green',
-            'suspended' => 'orange',
-            'terminated' => 'red',
-            default => 'gray'
-        };
+        $badges = [
+            'active' => 'success',
+            'inactive' => 'secondary',
+            'suspended' => 'warning',
+            'cancelled' => 'danger'
+        ];
+
+        return $badges[$this->status] ?? 'secondary';
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->where('status', 'inactive');
     }
 }

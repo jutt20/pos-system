@@ -21,15 +21,12 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body::before {
@@ -51,14 +48,12 @@
         }
 
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            max-width: 400px;
             width: 100%;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -84,6 +79,11 @@
             text-align: center;
         }
 
+        .login-header h2 {
+            margin: 0;
+            font-weight: 300;
+        }
+
         .login-body {
             padding: 2rem;
         }
@@ -102,34 +102,29 @@
         }
 
         .form-control {
-            border: none;
-            border-bottom: 2px solid #e9ecef;
-            border-radius: 0;
-            padding: 0.75rem 0;
-            background: transparent;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 16px;
+            transition: all 0.3s;
         }
 
         .form-control:focus {
             outline: none;
-            border-bottom-color: #11998e;
-            background: transparent;
+            border-color: #11998e;
+            box-shadow: 0 0 0 0.2rem rgba(17, 153, 142, 0.25);
         }
 
         .btn-login {
-            width: 100%;
-            padding: 0.75rem 2rem;
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
             border: none;
-            border-radius: 50px;
-            font-size: 1.2rem;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
+            color: white;
+            width: 100%;
+            transition: all 0.3s;
             margin-top: 20px;
             position: relative;
             overflow: hidden;
@@ -152,7 +147,8 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+            color: white;
         }
 
         .btn-login:active {
@@ -296,6 +292,16 @@
             padding-left: 2rem;
         }
 
+        .input-group-text {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-right: none;
+        }
+
+        .form-control.with-icon {
+            border-left: none;
+        }
+
         @media (max-width: 768px) {
             .login-container {
                 flex-direction: column;
@@ -356,30 +362,38 @@
         <div class="login-header">
             <i class="fas fa-store fa-3x mb-3"></i>
             <h2>Retailer Portal</h2>
-            <p class="mb-0">Access your retailer dashboard</p>
+            <p class="mb-0">Manage your business</p>
         </div>
         
         <div class="login-body">
             <form method="POST" action="{{ route('retailer.login') }}" class="login-form" id="loginForm">
                 @csrf
                 
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="Username" required autofocus autocomplete="username">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input id="username" type="text" class="form-control with-icon @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="Username" required autofocus autocomplete="username">
+                    </div>
                     @error('username')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="Password" required autocomplete="current-password">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input id="password" type="password" class="form-control with-icon @error('password') is-invalid @enderror" name="password" placeholder="Password" required autocomplete="current-password">
+                    </div>
                     @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="form-check mb-3">
+                <div class="mb-3 form-check">
                     <input class="form-check-input" type="checkbox" name="remember" id="remember_me">
                     <label class="form-check-label" for="remember_me">
                         Remember me
@@ -387,7 +401,7 @@
                 </div>
 
                 <button type="submit" class="btn-login">
-                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
                 </button>
 
                 <div class="form-links">
