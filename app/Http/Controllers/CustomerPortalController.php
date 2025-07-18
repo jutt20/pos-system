@@ -11,16 +11,11 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomerPortalController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function dashboard()
     {
         $user = Auth::user();
         
-        // Find customer record for this user
+        // Get customer record
         $customer = Customer::where('email', $user->email)->first();
         
         if (!$customer) {
@@ -28,46 +23,45 @@ class CustomerPortalController extends Controller
             $customer = Customer::create([
                 'name' => $user->name,
                 'email' => $user->email,
-                'phone' => $user->phone ?? null,
-                'balance' => 250.00,
-                'prepaid_status' => 'prepaid',
+                'phone' => $user->phone ?? '',
+                'address' => '',
+                'created_by' => 1 // Admin user
             ]);
         }
 
-        // Get customer's activations
-        $activations = Activation::where('customer_id', $customer->id)
-            ->latest()
-            ->take(10)
-            ->get();
+        // Get customer statistics
+        $totalInvoices = Invoice::where('customer_id', $customer->id)->count();
+        $totalSpent = Invoice::where('customer_id', $customer->id)
+            ->where('status', 'paid')
+            ->sum('total_amount');
+        $activeServices = Activation::where('customer_id', $customer->id)
+            ->where('status', 'active')
+            ->count();
+        $pendingOrders = SimOrder::where('customer_id', $customer->id)
+            ->where('status', 'pending')
+            ->count();
 
-        // Get customer's SIM orders
-        $simOrders = SimOrder::where('customer_id', $customer->id)
-            ->latest()
-            ->take(10)
-            ->get();
-
-        // Get customer's invoices
-        $invoices = Invoice::where('customer_id', $customer->id)
+        // Recent invoices
+        $recentInvoices = Invoice::where('customer_id', $customer->id)
+            ->with('items')
             ->latest()
             ->take(5)
             ->get();
 
-        // Calculate stats
-        $stats = [
-            'total_activations' => $activations->count(),
-            'active_services' => $activations->where('status', 'active')->count(),
-            'total_orders' => $simOrders->count(),
-            'pending_orders' => $simOrders->where('status', 'pending')->count(),
-            'account_balance' => $customer->balance,
-            'total_spent' => $invoices->where('status', 'paid')->sum('total_amount'),
-        ];
+        // Recent activations
+        $recentActivations = Activation::where('customer_id', $customer->id)
+            ->latest()
+            ->take(5)
+            ->get();
 
         return view('customer-portal.dashboard', compact(
-            'customer', 
-            'activations', 
-            'simOrders', 
-            'invoices', 
-            'stats'
+            'customer',
+            'totalInvoices',
+            'totalSpent',
+            'activeServices',
+            'pendingOrders',
+            'recentInvoices',
+            'recentActivations'
         ));
     }
 
@@ -81,9 +75,10 @@ class CustomerPortalController extends Controller
         }
 
         $activations = Activation::where('customer_id', $customer->id)
-            ->paginate(15);
+            ->latest()
+            ->paginate(20);
 
-        return view('customer-portal.activations', compact('activations', 'customer'));
+        return view('customer-portal.activations', compact('activations'));
     }
 
     public function orders()
@@ -95,10 +90,11 @@ class CustomerPortalController extends Controller
             return redirect()->route('customer-portal.dashboard');
         }
 
-        $simOrders = SimOrder::where('customer_id', $customer->id)
-            ->paginate(15);
+        $orders = SimOrder::where('customer_id', $customer->id)
+            ->latest()
+            ->paginate(20);
 
-        return view('customer-portal.orders', compact('simOrders', 'customer'));
+        return view('customer-portal.orders', compact('orders'));
     }
 
     public function invoices()
@@ -111,8 +107,10 @@ class CustomerPortalController extends Controller
         }
 
         $invoices = Invoice::where('customer_id', $customer->id)
-            ->paginate(15);
+            ->with('items')
+            ->latest()
+            ->paginate(20);
 
-        return view('customer-portal.invoices', compact('invoices', 'customer'));
+        return view('customer-portal.invoices', compact('invoices'));
     }
 }

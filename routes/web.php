@@ -14,15 +14,31 @@ use App\Http\Controllers\SimStockImportController;
 use App\Http\Controllers\SimStockExportController;
 use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\CustomerPortalController;
+use App\Http\Controllers\Auth\RetailerLoginController;
+use App\Http\Controllers\Auth\CustomerLoginController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     return view('welcome');
+})->name('welcome');
+
+// Retailer Authentication Routes
+Route::prefix('retailer')->name('retailer.')->group(function () {
+    Route::get('/login', [RetailerLoginController::class, 'create'])->name('login');
+    Route::post('/login', [RetailerLoginController::class, 'store']);
+    Route::post('/logout', [RetailerLoginController::class, 'destroy'])->name('logout');
 });
 
-// Authentication Routes
+// Customer Authentication Routes
+Route::prefix('customer')->name('customer.')->group(function () {
+    Route::get('/login', [CustomerLoginController::class, 'create'])->name('login');
+    Route::post('/login', [CustomerLoginController::class, 'store']);
+    Route::post('/logout', [CustomerLoginController::class, 'destroy'])->name('logout');
+});
+
+// Staff Authentication Routes
 require __DIR__.'/auth.php';
 
 // Dashboard Routes (Protected)

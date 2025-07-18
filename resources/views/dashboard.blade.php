@@ -1,412 +1,284 @@
 @extends('layouts.app')
 
-@section('title', 'Admin Portal Dashboard')
-
 @section('content')
-<div class="main-container">
-    <!-- Welcome Header -->
-    <div class="welcome-section">
-        <div class="welcome-content">
-            <div class="welcome-text">
-                <h1 class="welcome-title">Welcome back, {{ Auth::user()->name }}!</h1>
-                <p class="welcome-subtitle">Here's what's happening with your business today</p>
-            </div>
-            <div class="welcome-actions">
-                <a href="{{ route('customers.create') }}" class="btn-primary">
-                    <i class="fas fa-plus"></i> Add Customer
-                </a>
-                <a href="{{ route('invoices.create') }}" class="btn-outline">
-                    <i class="fas fa-file-invoice"></i> New Invoice
-                </a>
-            </div>
-        </div>
-        <div class="welcome-stats">
-            <div class="stat-item">
-                <div class="stat-number">${{ number_format($stats['total_revenue'], 0) }}</div>
-                <div class="stat-label">Total Revenue</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">{{ $stats['total_customers'] }}</div>
-                <div class="stat-label">Customers</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">{{ $stats['total_activations'] }}</div>
-                <div class="stat-label">Activations</div>
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-section">
+                <div class="welcome-content">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ asset('images/logo.jpg') }}" alt="Nexitel Logo" class="welcome-logo me-3">
+                        <div>
+                            <h1 class="welcome-title mb-1">Welcome back, {{ Auth::user()->name }}!</h1>
+                            <p class="welcome-subtitle mb-0">Here's what's happening with your business today.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="welcome-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">{{ number_format($totalRevenue, 2) }}</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">{{ $totalCustomers }}</div>
+                            <div class="stat-label">Total Customers</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-        <div class="stat-card revenue">
-            <div class="stat-card-header">
-                <div class="stat-icon">
-                    <i class="fas fa-dollar-sign"></i>
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card revenue">
+                <div class="stats-card-body">
+                    <div class="stats-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-value">${{ number_format($totalRevenue, 2) }}</div>
+                        <div class="stats-label">Total Revenue</div>
+                        <div class="stats-trend positive">
+                            <i class="fas fa-arrow-up"></i> 12.5%
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-trend positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+12%</span>
-                </div>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">${{ number_format($stats['total_revenue'], 2) }}</div>
-                <div class="stat-label">Total Revenue</div>
-                <div class="stat-description">Revenue from all paid invoices</div>
-            </div>
-            <div class="stat-action">
-                <a href="{{ route('reports.index') }}" class="btn-link">View Reports</a>
             </div>
         </div>
 
-        <div class="stat-card customers">
-            <div class="stat-card-header">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card customers">
+                <div class="stats-card-body">
+                    <div class="stats-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-value">{{ $totalCustomers }}</div>
+                        <div class="stats-label">Total Customers</div>
+                        <div class="stats-trend positive">
+                            <i class="fas fa-arrow-up"></i> 8.2%
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-trend positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+8%</span>
-                </div>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ $stats['total_customers'] }}</div>
-                <div class="stat-label">Total Customers</div>
-                <div class="stat-description">Active customer accounts</div>
-            </div>
-            <div class="stat-action">
-                <a href="{{ route('customers.index') }}" class="btn-link">View All</a>
             </div>
         </div>
 
-        <div class="stat-card activations">
-            <div class="stat-card-header">
-                <div class="stat-icon">
-                    <i class="fas fa-mobile-alt"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card activations">
+                <div class="stats-card-body">
+                    <div class="stats-icon">
+                        <i class="fas fa-sim-card"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-value">{{ $totalActivations }}</div>
+                        <div class="stats-label">Active SIMs</div>
+                        <div class="stats-trend positive">
+                            <i class="fas fa-arrow-up"></i> 15.3%
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-trend positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+15%</span>
-                </div>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ $stats['total_activations'] }}</div>
-                <div class="stat-label">SIM Activations</div>
-                <div class="stat-description">Total activated SIM cards</div>
-            </div>
-            <div class="stat-action">
-                <a href="{{ route('activations.index') }}" class="btn-link">View All</a>
             </div>
         </div>
 
-        <div class="stat-card invoices">
-            <div class="stat-card-header">
-                <div class="stat-icon">
-                    <i class="fas fa-file-invoice"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card orders">
+                <div class="stats-card-body">
+                    <div class="stats-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-value">{{ $totalOrders }}</div>
+                        <div class="stats-label">Total Orders</div>
+                        <div class="stats-trend positive">
+                            <i class="fas fa-arrow-up"></i> 6.7%
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-trend neutral">
-                    <i class="fas fa-minus"></i>
-                    <span>{{ $stats['pending_invoices'] }}</span>
-                </div>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ $stats['pending_invoices'] }}</div>
-                <div class="stat-label">Pending Invoices</div>
-                <div class="stat-description">Invoices awaiting payment</div>
-            </div>
-            <div class="stat-action">
-                <a href="{{ route('invoices.index') }}" class="btn-link">View All</a>
             </div>
         </div>
     </div>
 
     <!-- Services Grid -->
-    <div class="services-section">
-        <h2 class="section-title">
-            <i class="fas fa-rocket"></i>
-            Quick Actions
-        </h2>
-        <div class="services-grid">
-            <div class="service-card">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="section-title mb-4">
+                <i class="fas fa-cogs me-2"></i>
+                Quick Services
+            </h3>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <a href="{{ route('customers.index') }}" class="service-card">
                 <div class="service-icon customers">
-                    <i class="fas fa-user-plus"></i>
+                    <i class="fas fa-users"></i>
                 </div>
                 <div class="service-content">
-                    <div class="service-title">Add Customer</div>
-                    <div class="service-description">Create a new customer account</div>
+                    <h5>Customer Management</h5>
+                    <p>Manage customer accounts and information</p>
                 </div>
-                <div class="service-action">
-                    <a href="{{ route('customers.create') }}" class="btn-service">Create</a>
+                <div class="service-arrow">
+                    <i class="fas fa-arrow-right"></i>
                 </div>
-            </div>
+            </a>
+        </div>
 
-            <div class="service-card">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <a href="{{ route('invoices.index') }}" class="service-card">
                 <div class="service-icon invoices">
                     <i class="fas fa-file-invoice-dollar"></i>
                 </div>
                 <div class="service-content">
-                    <div class="service-title">Generate Invoice</div>
-                    <div class="service-description">Create and send invoices</div>
+                    <h5>Invoice Management</h5>
+                    <p>Create and manage customer invoices</p>
                 </div>
-                <div class="service-action">
-                    <a href="{{ route('invoices.create') }}" class="btn-service">Create</a>
+                <div class="service-arrow">
+                    <i class="fas fa-arrow-right"></i>
                 </div>
-            </div>
+            </a>
+        </div>
 
-            <div class="service-card">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <a href="{{ route('sim-stocks.index') }}" class="service-card">
+                <div class="service-icon sim-stock">
+                    <i class="fas fa-sim-card"></i>
+                </div>
+                <div class="service-content">
+                    <h5>SIM Stock Management</h5>
+                    <p>Track and manage SIM card inventory</p>
+                </div>
+                <div class="service-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <a href="{{ route('activations.index') }}" class="service-card">
                 <div class="service-icon activations">
                     <i class="fas fa-mobile-alt"></i>
                 </div>
                 <div class="service-content">
-                    <div class="service-title">SIM Activation</div>
-                    <div class="service-description">Activate new SIM cards</div>
+                    <h5>SIM Activations</h5>
+                    <p>Activate and manage SIM cards</p>
                 </div>
-                <div class="service-action">
-                    <a href="{{ route('activations.create') }}" class="btn-service">Activate</a>
+                <div class="service-arrow">
+                    <i class="fas fa-arrow-right"></i>
                 </div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-icon orders">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <div class="service-content">
-                    <div class="service-title">SIM Orders</div>
-                    <div class="service-description">Manage SIM card orders</div>
-                </div>
-                <div class="service-action">
-                    <a href="{{ route('sim-orders.create') }}" class="btn-service">Order</a>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-icon reports">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <div class="service-content">
-                    <div class="service-title">Reports</div>
-                    <div class="service-description">View business analytics</div>
-                </div>
-                <div class="service-action">
-                    <a href="{{ route('reports.index') }}" class="btn-service">View</a>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-icon stock">
-                    <i class="fas fa-sim-card"></i>
-                </div>
-                <div class="service-content">
-                    <div class="service-title">SIM Stock</div>
-                    <div class="service-description">Manage SIM inventory</div>
-                </div>
-                <div class="service-action">
-                    <a href="{{ route('sim-stocks.index') }}" class="btn-service">Manage</a>
-                </div>
-            </div>
+            </a>
         </div>
     </div>
 
-    <!-- Recent Activity -->
+    <!-- Activity and Charts -->
     <div class="row">
-        <div class="col-lg-8">
-            <div class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-clock"></i>
-                        Recent Activity
-                    </h2>
-                    <div class="section-actions">
-                        <a href="{{ route('invoices.index') }}" class="btn-outline-sm">View All</a>
-                    </div>
+        <div class="col-lg-8 mb-4">
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Revenue Overview
+                    </h5>
                 </div>
-                
-                <div class="activity-list">
-                    @foreach($recentInvoices as $invoice)
-                    <div class="activity-item">
-                        <div class="activity-avatar">
-                            <div class="avatar-circle {{ $invoice->status == 'paid' ? 'success' : 'warning' }}">
-                                <i class="fas fa-{{ $invoice->status == 'paid' ? 'check' : 'clock' }}"></i>
-                            </div>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">
-                                Invoice {{ $invoice->invoice_number }}
-                            </div>
-                            <div class="activity-subtitle">
-                                {{ $invoice->customer->name }} • ${{ number_format($invoice->total_amount, 2) }}
-                            </div>
-                            <div class="activity-time">
-                                {{ $invoice->created_at->diffForHumans() }}
-                            </div>
-                        </div>
-                        <div class="activity-status">
-                            <span class="status-badge status-{{ $invoice->status }}">
-                                {{ ucfirst($invoice->status) }}
-                            </span>
-                        </div>
-                    </div>
-                    @endforeach
+                <div class="activity-body">
+                    <canvas id="revenueChart" height="100"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-users"></i>
-                        Recent Customers
-                    </h2>
-                    <div class="section-actions">
-                        <a href="{{ route('customers.index') }}" class="btn-outline-sm">View All</a>
-                    </div>
+        <div class="col-lg-4 mb-4">
+            <div class="activity-card">
+                <div class="activity-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>
+                        Recent Activity
+                    </h5>
                 </div>
-                
-                <div class="customer-list">
-                    @foreach(App\Models\Customer::latest()->take(5)->get() as $customer)
-                    <div class="customer-item">
-                        <div class="customer-avatar">
-                            <div class="avatar-circle">{{ substr($customer->name, 0, 1) }}</div>
+                <div class="activity-body">
+                    <div class="activity-list">
+                        @foreach($recentActivities as $activity)
+                        <div class="activity-item">
+                            <div class="activity-icon {{ $activity['type'] }}">
+                                <i class="fas {{ $activity['icon'] }}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">{{ $activity['title'] }}</div>
+                                <div class="activity-time">{{ $activity['time'] }}</div>
+                            </div>
                         </div>
-                        <div class="customer-content">
-                            <div class="customer-name">{{ $customer->name }}</div>
-                            <div class="customer-email">{{ $customer->email }}</div>
-                            <div class="customer-time">{{ $customer->created_at->diffForHumans() }}</div>
-                        </div>
-                        <div class="customer-action">
-                            <a href="{{ route('customers.show', $customer) }}" class="btn-sm">View</a>
-                        </div>
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
-
-@push('scripts')
-<script>
-    // Revenue Chart
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    const revenueChart = new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-                label: 'Revenue',
-                data: [
-                    @foreach(range(1, 12) as $month) {
-                        {
-                            $monthlyRevenue - > where('month', $month) - > first() - > revenue ?? 0
-                        }
-                    },
-                    @endforeach
-                ],
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-    // Brand Chart
-    const brandCtx = document.getElementById('brandChart').getContext('2d');
-    const brandChart = new Chart(brandCtx, {
-        type: 'doughnut',
-        data: {
-            labels: [
-                @foreach($activationsByBrand as $brand)
-                '{{ $brand->brand }}',
-                @endforeach
-            ],
-            datasets: [{
-                data: [
-                    @foreach($activationsByBrand as $brand) {
-                        {
-                            $brand - > count
-                        }
-                    },
-                    @endforeach
-                ],
-                backgroundColor: [
-                    '#FF6384',
-                    '#36A2EB',
-                    '#FFCE56',
-                    '#4BC0C0',
-                    '#9966FF',
-                    '#FF9F40'
-                ]
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-</script>
-@endpush
 
 <style>
-/* Welcome Section */
 .welcome-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 20px;
-    padding: 40px;
-    margin-bottom: 30px;
+    padding: 2rem;
     color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 30px;
+    margin-bottom: 2rem;
 }
 
-.welcome-content {
-    flex: 1;
-    min-width: 300px;
+.welcome-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .welcome-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 10px;
-    line-height: 1.2;
+    margin: 0;
 }
 
 .welcome-subtitle {
     font-size: 1.1rem;
     opacity: 0.9;
-    margin-bottom: 25px;
-}
-
-.welcome-actions {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
 }
 
 .welcome-stats {
     display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
+    gap: 2rem;
 }
 
 .stat-item {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-.stat-number {
-    font-size: 2rem;
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 5px;
 }
 
 .stat-label {
@@ -414,289 +286,200 @@
     opacity: 0.8;
 }
 
-/* Enhanced Stats Grid */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    margin-bottom: 40px;
-}
-
-.stat-card {
+.stats-card {
     background: white;
     border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
-    border: 1px solid #f0f0f0;
+    overflow: hidden;
+    position: relative;
 }
 
-.stat-card:hover {
+.stats-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
 }
 
-.stat-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.stat-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
+.stats-card-body {
+    padding: 1.5rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    color: white;
+    gap: 1rem;
 }
 
-.stat-card.revenue .stat-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
-.stat-card.customers .stat-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
-.stat-card.activations .stat-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-.stat-card.invoices .stat-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-
-.stat-trend {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 20px;
-}
-
-.stat-trend.positive {
-    background: #e8f5e8;
-    color: #2d7d32;
-}
-
-.stat-trend.neutral {
-    background: #fff3e0;
-    color: #f57c00;
-}
-
-.stat-value {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: #1a1a1a;
-}
-
-.stat-label {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.stat-description {
-    font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 15px;
-}
-
-.stat-action .btn-link {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-/* Services Section */
-.services-section {
-    margin-bottom: 40px;
-}
-
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.service-card {
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    border: 1px solid #f0f0f0;
-}
-
-.service-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
-}
-
-.service-icon {
+.stats-icon {
     width: 60px;
     height: 60px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stats-card.revenue .stats-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+.stats-card.customers .stats-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.stats-card.activations .stats-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.stats-card.orders .stats-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+.stats-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.stats-label {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.stats-trend {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.stats-trend.positive { color: #48bb78; }
+.stats-trend.negative { color: #f56565; }
+
+.section-title {
+    color: #2d3748;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.service-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    text-decoration: none;
+    color: inherit;
+}
+
+.service-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
     color: white;
     flex-shrink: 0;
 }
 
 .service-icon.customers { background: linear-gradient(135deg, #f093fb, #f5576c); }
 .service-icon.invoices { background: linear-gradient(135deg, #667eea, #764ba2); }
-.service-icon.activations { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-.service-icon.orders { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-.service-icon.reports { background: linear-gradient(135deg, #fa709a, #fee140); }
-.service-icon.stock { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
+.service-icon.sim-stock { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.service-icon.activations { background: linear-gradient(135deg, #43e97b, #38f9d7); }
 
-.service-content {
-    flex: 1;
-}
-
-.service-title {
-    font-size: 1.1rem;
+.service-content h5 {
     font-weight: 600;
-    margin-bottom: 5px;
-    color: #333;
+    margin-bottom: 0.5rem;
+    color: #2d3748;
 }
 
-.service-description {
+.service-content p {
+    color: #718096;
+    margin: 0;
     font-size: 0.9rem;
-    color: #666;
 }
 
-.btn-service {
-    background: #f8f9fa;
-    color: #333;
-    padding: 8px 16px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    border: 1px solid #e9ecef;
+.service-arrow {
+    margin-left: auto;
+    color: #cbd5e0;
+    font-size: 1.2rem;
 }
 
-.btn-service:hover {
-    background: #667eea;
-    color: white;
-    text-decoration: none;
+.activity-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    height: 100%;
 }
 
-/* Activity Lists */
-.activity-list, .customer-list {
-    space-y: 15px;
+.activity-header {
+    padding: 1.5rem 1.5rem 0;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
 }
 
-.activity-item, .customer-item {
+.activity-header h5 {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.activity-body {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.activity-item {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 15px 0;
-    border-bottom: 1px solid #f0f0f0;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f7fafc;
 }
 
-.activity-item:last-child, .customer-item:last-child {
+.activity-item:last-child {
     border-bottom: none;
 }
 
-.activity-avatar, .customer-avatar {
-    flex-shrink: 0;
-}
-
-.avatar-circle {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
+.activity-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    color: white;
-    background: #667eea;
-}
-
-.avatar-circle.success { background: #28a745; }
-.avatar-circle.warning { background: #ffc107; color: #333; }
-
-.activity-content, .customer-content {
-    flex: 1;
-}
-
-.activity-title, .customer-name {
-    font-weight: 600;
-    margin-bottom: 3px;
-    color: #333;
-}
-
-.activity-subtitle, .customer-email {
     font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 3px;
-}
-
-.activity-time, .customer-time {
-    font-size: 0.8rem;
-    color: #999;
-}
-
-.section-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.section-title i {
-    color: #667eea;
-}
-
-.btn-outline-sm {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    border: 1px solid #667eea;
-    color: #667eea;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.btn-outline-sm:hover {
-    background: #667eea;
     color: white;
-    text-decoration: none;
 }
 
-/* Responsive Design */
+.activity-icon.customer { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.activity-icon.invoice { background: linear-gradient(135deg, #667eea, #764ba2); }
+.activity-icon.activation { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+.activity-title {
+    font-weight: 500;
+    color: #2d3748;
+    font-size: 0.9rem;
+}
+
+.activity-time {
+    color: #718096;
+    font-size: 0.8rem;
+}
+
 @media (max-width: 768px) {
     .welcome-section {
-        padding: 25px;
+        flex-direction: column;
         text-align: center;
-    }
-    
-    .welcome-title {
-        font-size: 2rem;
+        gap: 1.5rem;
     }
     
     .welcome-stats {
-        justify-content: center;
-        width: 100%;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .services-grid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        gap: 1rem;
     }
     
     .service-card {
@@ -705,3 +488,46 @@
     }
 }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Revenue Chart
+const ctx = document.getElementById('revenueChart').getContext('2d');
+const revenueChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Revenue',
+            data: {!! json_encode($monthlyRevenue) !!},
+            borderColor: 'rgb(102, 126, 234)',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0,0,0,0.05)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        }
+    }
+});
+</script>
+@endsection

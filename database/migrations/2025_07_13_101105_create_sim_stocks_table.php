@@ -65,9 +65,7 @@ return new class extends Migration
             $table->index(['batch_id']);
             $table->index(['vendor', 'brand']);
             $table->index(['stock_level', 'minimum_stock']);
-            
-            // Foreign key for activated_by (user who activated)
-            $table->foreign('activated_by')->references('id')->on('users')->onDelete('set null');
+            $table->index(['activated_by']);
         });
     }
 

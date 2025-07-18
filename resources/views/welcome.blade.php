@@ -34,17 +34,12 @@
         }
 
         .nexitel-logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #3b82f6, #10b981);
+            width: 120px;
+            height: 120px;
             border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             margin: 0 auto 30px;
-            font-size: 2rem;
-            color: white;
-            font-weight: 700;
+            display: block;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
         .welcome-title {
@@ -174,14 +169,17 @@
                 width: 100%;
                 max-width: 250px;
             }
+
+            .nexitel-logo {
+                width: 100px;
+                height: 100px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="welcome-container">
-        <div class="nexitel-logo">
-            N
-        </div>
+        <img src="{{ asset('images/logo.jpg') }}" alt="Nexitel Logo" class="nexitel-logo">
         
         <h1 class="welcome-title">Welcome to Nexitel</h1>
         <p class="welcome-subtitle">Next Generation Network</p>
@@ -198,12 +196,12 @@
         </a>
         
         <div class="portal-options">
-            <a href="{{ route('retailer.dashboard') }}" class="portal-btn retailer">
+            <a href="{{ route('retailer.login') }}" class="portal-btn retailer">
                 <i class="fas fa-store portal-icon"></i>
                 Retailer Portal
             </a>
             
-            <a href="{{ route('customer-portal.dashboard') }}" class="portal-btn customer">
+            <a href="{{ route('customer.login') }}" class="portal-btn customer">
                 <i class="fas fa-user portal-icon"></i>
                 Customer Portal
             </a>
