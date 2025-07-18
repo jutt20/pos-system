@@ -18,47 +18,47 @@ class QuickSeeder extends Seeder
     {
         // Create employees
         $superAdmin = Employee::create([
-            'name' => 'Super Administrator',
-            'email' => 'superadmin@nexitel.com',
-            'username' => 'superadmin',
+            'name' => 'Super Administrator1',
+            'email' => 'superadmin1@nexitel.com',
+            'username' => 'superadmin1',
             'password' => Hash::make('superadmin123'),
-            'phone' => '+1234567888',
+            'phone' => '+1234567999',
         ]);
         $superAdmin->assignRole('Super Admin');
 
         $admin = Employee::create([
-            'name' => 'System Administrator',
-            'email' => 'admin@nexitel.com',
-            'username' => 'admin',
+            'name' => 'System Administrator1',
+            'email' => 'admin1@nexitel.com',
+            'username' => 'admin1',
             'password' => Hash::make('password'),
-            'phone' => '+1234567890',
+            'phone' => '+1234567899',
         ]);
         $admin->assignRole('Admin');
 
         $manager = Employee::create([
-            'name' => 'John Manager',
-            'email' => 'manager@nexitel.com',
-            'username' => 'manager',
+            'name' => 'John Manager1',
+            'email' => 'manager1@nexitel.com',
+            'username' => 'manager1',
             'password' => Hash::make('password'),
-            'phone' => '+1234567891',
+            'phone' => '+1234567890',
         ]);
         $manager->assignRole('Manager');
 
         $sales = Employee::create([
-            'name' => 'Mike Sales',
-            'email' => 'sales@nexitel.com',
-            'username' => 'sales',
+            'name' => 'Mike Sales1',
+            'email' => 'sales1@nexitel.com',
+            'username' => 'sales1',
             'password' => Hash::make('password'),
-            'phone' => '+1234567893',
+            'phone' => '+1234567891',
         ]);
         $sales->assignRole('Sales Agent');
 
         $cashier = Employee::create([
-            'name' => 'Mike Cashier',
-            'email' => 'cashier@nexitel.com',
-            'username' => 'cashier',
+            'name' => 'Mike Cashier1',
+            'email' => 'cashier1@nexitel.com',
+            'username' => 'cashier1',
             'password' => Hash::make('password'),
-            'phone' => '+1234567893',
+            'phone' => '+1234567891',
             'role' => 'Cashier',
         ]);
 

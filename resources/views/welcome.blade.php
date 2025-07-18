@@ -181,7 +181,7 @@
             <p class="hero-subtitle">Complete Point of Sale Solution for SIM Card Management</p>
             
             <div class="portal-cards">
-                <a href="{{ route('staff.login') }}" class="portal-card staff-portal">
+                <a href="{{ route('login') }}" class="portal-card staff-portal">
                     <div class="portal-icon">
                         <i class="fas fa-users"></i>
                     </div>
@@ -220,7 +220,7 @@
                     </button>
                 </a>
 
-                <a href="{{ route('sim-order.create') }}" class="portal-card order-portal">
+                <a href="{{ route('sim-orders.create') }}" class="portal-card order-portal">
                     <div class="portal-icon">
                         <i class="fas fa-shopping-cart"></i>
                     </div>

@@ -227,7 +227,7 @@
                     <a href="{{ route('welcome') }}" class="btn btn-primary">
                         <i class="fas fa-home"></i> Back to Home
                     </a>
-                    <a href="{{ route('sim-order.create') }}" class="btn btn-outline-primary">
+                    <a href="{{ route('sim-orders.create') }}" class="btn btn-outline-primary">
                         <i class="fas fa-plus"></i> Place New Order
                     </a>
                 </div>

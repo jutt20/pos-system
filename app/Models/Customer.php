@@ -17,14 +17,19 @@ class Customer extends Authenticatable
         'email',
         'password',
         'phone',
+        'company',
         'address',
+        'balance',
+        'prepaid_status',
+        'assigned_employee_id',
+        'status',
+        'created_by',
         'city',
         'state',
         'zip_code',
         'id_number',
         'id_type',
         'date_of_birth',
-        'created_by'
     ];
 
     protected $hidden = [
@@ -37,6 +42,8 @@ class Customer extends Authenticatable
         'date_of_birth' => 'date',
         'password' => 'hashed',
     ];
+
+    // 🔁 Relationships
 
     public function invoices()
     {
@@ -62,6 +69,13 @@ class Customer extends Authenticatable
     {
         return $this->belongsTo(Employee::class, 'created_by');
     }
+
+    public function assignedEmployee()
+    {
+        return $this->belongsTo(Employee::class, 'assigned_employee_id');
+    }
+
+    // 🧠 Accessors
 
     public function getFullNameAttribute()
     {

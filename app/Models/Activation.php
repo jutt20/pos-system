@@ -11,50 +11,63 @@ class Activation extends Model
 
     protected $fillable = [
         'customer_id',
-        'phone_number',
-        'sim_number',
-        'plan_name',
-        'plan_price',
+        'employee_id',
+        'brand',
+        'plan',
+        'sku',
+        'quantity',
+        'price',
+        'cost',
+        'profit',
         'activation_date',
         'status',
         'notes',
-        'created_by'
     ];
 
     protected $casts = [
         'activation_date' => 'date',
-        'plan_price' => 'decimal:2',
+        'price' => 'decimal:2',
+        'cost' => 'decimal:2',
+        'profit' => 'decimal:2',
     ];
 
+    // ✅ Relationships
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
 
-    public function createdBy()
+    public function employee()
     {
-        return $this->belongsTo(Employee::class, 'created_by');
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    // ✅ Accessors
     public function getStatusBadgeAttribute()
     {
         $badges = [
+            'pending' => 'secondary',
             'active' => 'success',
-            'inactive' => 'secondary',
             'suspended' => 'warning',
-            'cancelled' => 'danger'
+            'terminated' => 'danger',
         ];
 
         return $badges[$this->status] ?? 'secondary';
     }
 
+    // ✅ Scopes
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    public function scopeInactive($query)
+    public function scopePending($query)
     {
-        return $query->where('status', 'inactive');
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeSuspended($query)
+    {
+        return $query->where('status', 'suspended');
     }
 }

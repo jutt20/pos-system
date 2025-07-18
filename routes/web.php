@@ -68,11 +68,20 @@ Route::middleware('auth:employee')->group(function () {
     Route::resource('sim-orders', SimOrderController::class);
     
     // SIM Stock
-    Route::resource('sim-stocks', SimStockController::class);
-    
+    Route::middleware(['permission:manage sim stocks'])->group(function () {
+        Route::resource('sim-stocks', SimStockController::class);
+        Route::post('sim-stocks/import', [SimStockController::class, 'import'])->name('sim-stocks.import');
+        Route::get('sim-stocks/export', [SimStockController::class, 'export'])->name('sim-stocks.export');
+        Route::post('sim-stocks/activate', [SimStockController::class, 'activate'])->name('sim-stocks.activate');
+        Route::post('sim-stocks/bulk-update', [SimStockController::class, 'bulkUpdate'])->name('sim-stocks.bulk-update');
+    });
+
     // Reports
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/overview', [ReportController::class, 'overview'])->name('reports.overview');
+    Route::middleware(['permission:view reports'])->group(function () {
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/overview', [ReportController::class, 'overview'])->name('reports.overview');
+        Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
+    });    
     
     // Roles (Super Admin only)
     Route::resource('roles', RoleController::class);

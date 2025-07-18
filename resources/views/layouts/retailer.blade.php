@@ -784,7 +784,13 @@
             </div>
             <div class="header-actions">
                 <span class="retailer-badge">Retailer</span>
-                <a href="{{ route('logout') }}" class="logout-btn">Logout</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+
+                <a href="#" class="logout-btn" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    Logout
+                </a>
             </div>
         </div>
         
