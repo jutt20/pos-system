@@ -559,8 +559,8 @@
                 @endif
 
                 <div class="form-group">
-                    <label for="login" class="form-label">Email or Username</label>
-                    <input id="login" type="text" class="form-control" name="login" value="{{ old('login') }}" required autofocus autocomplete="username">
+                    <label for="username" class="form-label">Username</label>
+                    <input id="username" type="text" class="form-control" name="username" value="{{ old('username') }}" required autofocus autocomplete="username">
                     <i class="fas fa-user input-icon"></i>
                 </div>
 

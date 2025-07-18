@@ -1,14 +1,11 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ActivationController;
 use App\Http\Controllers\SimOrderController;
-use App\Http\Controllers\OnlineSimOrderController;
-use App\Http\Controllers\DeliveryServiceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SimStockController;
@@ -16,111 +13,150 @@ use App\Http\Controllers\SimStockImportController;
 use App\Http\Controllers\SimStockExportController;
 use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\CustomerPortalController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\OnlineSimOrderController;
+use App\Http\Controllers\DeliveryServiceController;
 use App\Http\Controllers\Auth\RetailerLoginController;
 use App\Http\Controllers\Auth\CustomerLoginController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
 */
 
-// Welcome Page
 Route::get('/', function () {
     return view('welcome');
-})->name('welcome');
+});
+
+// Staff Authentication Routes
+Route::middleware('guest:employee')->group(function () {
+    Route::get('login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])
+                ->name('login');
+    Route::post('login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store']);
+});
+
+Route::middleware('auth:employee')->group(function () {
+    Route::post('logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])
+                ->name('logout');
+});
+
+// Retailer Authentication Routes
+Route::prefix('retailer')->name('retailer.')->group(function () {
+    Route::middleware('guest:employee')->group(function () {
+        Route::get('login', [RetailerLoginController::class, 'create'])->name('login');
+        Route::post('login', [RetailerLoginController::class, 'login']);
+    });
+    
+    Route::middleware('auth:employee')->group(function () {
+        Route::post('logout', [RetailerLoginController::class, 'destroy'])->name('logout');
+        Route::get('dashboard', [RetailerController::class, 'dashboard'])->name('dashboard');
+        Route::get('reports', [RetailerController::class, 'reports'])->name('reports');
+        Route::get('transactions', [RetailerController::class, 'transactions'])->name('transactions');
+    });
+});
+
+// Customer Authentication Routes
+Route::prefix('customer')->name('customer.')->group(function () {
+    Route::middleware('guest:customer')->group(function () {
+        Route::get('login', [CustomerLoginController::class, 'create'])->name('login');
+        Route::post('login', [CustomerLoginController::class, 'login']);
+    });
+    
+    Route::middleware('auth:customer')->group(function () {
+        Route::post('logout', [CustomerLoginController::class, 'destroy'])->name('logout');
+        Route::get('dashboard', [CustomerPortalController::class, 'dashboard'])->name('dashboard');
+    });
+});
 
 // Public Online SIM Order Routes
-Route::get('/order-sim', [OnlineSimOrderController::class, 'publicCreate'])->name('sim-order.create');
-Route::post('/order-sim', [OnlineSimOrderController::class, 'publicStore'])->name('sim-order.store');
-Route::get('/track/{orderNumber}', [OnlineSimOrderController::class, 'track'])->name('online-sim-orders.track');
+Route::get('/order-sim', [OnlineSimOrderController::class, 'create'])->name('online-sim-orders.create');
+Route::post('/order-sim', [OnlineSimOrderController::class, 'store'])->name('online-sim-orders.store');
+Route::get('/track-order/{orderNumber}', [OnlineSimOrderController::class, 'track'])->name('online-sim-orders.track');
 
-// Authentication Routes
-Route::get('/staff-login', function () {
-    return view('auth.login');
-})->name('staff.login');
-
-// Retailer Authentication
-Route::get('/retailer-login', [RetailerLoginController::class, 'create'])->name('retailer.login');
-Route::post('/retailer-login', [RetailerLoginController::class, 'login']);
-Route::post('/retailer-logout', [RetailerLoginController::class, 'destroy'])->name('retailer.logout');
-
-// Customer Authentication
-Route::get('/customer-login', [CustomerLoginController::class, 'create'])->name('customer.login');
-Route::post('/customer-login', [CustomerLoginController::class, 'login']);
-Route::post('/customer-logout', [CustomerLoginController::class, 'destroy'])->name('customer.logout');
-
-// Staff Dashboard Routes (Protected)
+// Staff Protected Routes
 Route::middleware(['auth:employee'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    // Customer Management
-    Route::resource('customers', CustomerController::class);
-    Route::post('customers/{customer}/upload-document', [CustomerController::class, 'uploadDocument'])->name('customers.upload-document');
-    Route::delete('customers/{customer}/documents/{document}', [CustomerController::class, 'deleteDocument'])->name('customers.delete-document');
-    
+
     // Employee Management
-    Route::resource('employees', EmployeeController::class);
-    
+    Route::middleware(['permission:manage employees'])->group(function () {
+        Route::resource('employees', EmployeeController::class);
+    });
+
+    // Customer Management
+    Route::middleware(['permission:manage customers'])->group(function () {
+        Route::resource('customers', CustomerController::class);
+    });
+
     // Invoice Management
-    Route::resource('invoices', InvoiceController::class);
-    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'generatePDF'])->name('invoices.pdf');
-    
+    Route::middleware(['permission:manage invoices'])->group(function () {
+        Route::resource('invoices', InvoiceController::class);
+        Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
+    });
+
     // Activation Management
-    Route::resource('activations', ActivationController::class);
-    
+    Route::middleware(['permission:manage activations'])->group(function () {
+        Route::resource('activations', ActivationController::class);
+    });
+
     // SIM Order Management
-    Route::resource('sim-orders', SimOrderController::class);
-    
+    Route::middleware(['permission:manage orders'])->group(function () {
+        Route::resource('sim-orders', SimOrderController::class);
+    });
+
     // Online SIM Order Management
-    Route::resource('online-sim-orders', OnlineSimOrderController::class);
-    Route::post('online-sim-orders/{onlineSimOrder}/approve', [OnlineSimOrderController::class, 'approve'])->name('online-sim-orders.approve');
-    Route::patch('online-sim-orders/{onlineSimOrder}/status', [OnlineSimOrderController::class, 'updateStatus'])->name('online-sim-orders.update-status');
-    
+    Route::middleware(['permission:manage online orders'])->group(function () {
+        Route::get('/admin/online-sim-orders', [OnlineSimOrderController::class, 'index'])->name('admin.online-sim-orders.index');
+        Route::get('/admin/online-sim-orders/{order}', [OnlineSimOrderController::class, 'show'])->name('admin.online-sim-orders.show');
+        Route::patch('/admin/online-sim-orders/{order}/approve', [OnlineSimOrderController::class, 'approve'])->name('admin.online-sim-orders.approve');
+        Route::patch('/admin/online-sim-orders/{order}/update-status', [OnlineSimOrderController::class, 'updateStatus'])->name('admin.online-sim-orders.update-status');
+    });
+
     // Delivery Service Management
-    Route::resource('delivery-services', DeliveryServiceController::class);
-    Route::post('delivery-services/{deliveryService}/toggle', [DeliveryServiceController::class, 'toggle'])->name('delivery-services.toggle');
-    
-    // Reports
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::post('/reports/export', [ReportController::class, 'export'])->name('reports.export');
-    
-    // Role Management
-    Route::resource('roles', RoleController::class);
-    
+    Route::middleware(['permission:manage delivery services'])->group(function () {
+        Route::resource('delivery-services', DeliveryServiceController::class);
+    });
+
     // SIM Stock Management
-    Route::resource('sim-stocks', SimStockController::class);
-    Route::patch('sim-stocks/{simStock}/activate', [SimStockController::class, 'activate'])->name('sim-stocks.activate');
-    Route::post('sim-stocks/bulk-update', [SimStockController::class, 'bulkUpdate'])->name('sim-stocks.bulk-update');
-    Route::get('sim-stocks-export', [SimStockController::class, 'export'])->name('sim-stocks.export');
-    Route::post('sim-stocks-import', [SimStockController::class, 'import'])->name('sim-stocks.import');
-    
+    Route::middleware(['permission:manage sim stock'])->group(function () {
+        Route::resource('sim-stocks', SimStockController::class);
+        Route::post('sim-stocks/{simStock}/activate', [SimStockController::class, 'activate'])->name('sim-stocks.activate');
+        Route::get('sim-stocks-import', [SimStockImportController::class, 'create'])->name('sim-stocks.import');
+        Route::post('sim-stocks-import', [SimStockImportController::class, 'store'])->name('sim-stocks.import.store');
+        Route::get('sim-stocks-export', [SimStockExportController::class, 'export'])->name('sim-stocks.export');
+    });
+
+    // Reports
+    Route::middleware(['permission:view reports'])->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/overview', [ReportController::class, 'overview'])->name('reports.overview');
+    });
+
+    // Role Management (Super Admin only)
+    Route::middleware(['role:Super Admin'])->group(function () {
+        Route::resource('roles', RoleController::class);
+    });
+
     // Chat System
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
-    Route::post('/chat/{room}/message', [ChatController::class, 'sendMessage'])->name('chat.send-message');
-});
-
-// Retailer Dashboard Routes
-Route::middleware(['auth:employee', 'role:Retailer'])->prefix('retailer')->name('retailer.')->group(function () {
-    Route::get('/dashboard', [RetailerController::class, 'dashboard'])->name('dashboard');
-    Route::get('/reports', [RetailerController::class, 'reports'])->name('reports');
-    Route::get('/transactions', [RetailerController::class, 'transactions'])->name('transactions');
-});
-
-// Customer Portal Routes
-Route::middleware(['auth:customer'])->prefix('customer')->name('customer.')->group(function () {
-    Route::get('/dashboard', [CustomerPortalController::class, 'dashboard'])->name('dashboard');
-    Route::get('/orders', [CustomerPortalController::class, 'orders'])->name('orders');
-    Route::get('/invoices', [CustomerPortalController::class, 'invoices'])->name('invoices');
-    Route::get('/profile', [CustomerPortalController::class, 'profile'])->name('profile');
+    Route::prefix('chat')->name('chat.')->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::get('/room/{room}', [ChatController::class, 'show'])->name('show');
+        Route::post('/room/{room}/message', [ChatController::class, 'sendMessage'])->name('send-message');
+        Route::post('/create-room', [ChatController::class, 'createRoom'])->name('create-room');
+    });
 });
 
 require __DIR__.'/auth.php';
