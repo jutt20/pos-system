@@ -10,6 +10,7 @@ use App\Http\Controllers\SimOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\SimStockController;
 use App\Http\Controllers\SimStockExportController;
 use App\Http\Controllers\SimStockImportController;
@@ -22,8 +23,21 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
+
+// Retailer Portal Routes (No Authentication Required for Demo)
+Route::prefix('retailer')->name('retailer.')->group(function () {
+    Route::get('/dashboard', [RetailerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/transactions', [RetailerController::class, 'transactions'])->name('transactions');
+    Route::get('/reports', [RetailerController::class, 'reports'])->name('reports');
+});
+
+// Customer Portal Route
+Route::get('/customer-portal', function () {
+    return view('customer-portal.dashboard');
+})->name('customer-portal.dashboard');
+
 
 // Authentication Routes
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
