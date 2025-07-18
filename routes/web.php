@@ -17,6 +17,8 @@ use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\Auth\RetailerLoginController;
 use App\Http\Controllers\Auth\CustomerLoginController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\OnlineSimOrderController;
+use App\Http\Controllers\DeliveryServiceController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,6 +26,9 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
+
+// Public order tracking
+Route::get('/track/{orderNumber}', [OnlineSimOrderController::class, 'track'])->name('orders.track');
 
 // Retailer Authentication Routes
 Route::prefix('retailer')->name('retailer.')->group(function () {
@@ -68,6 +73,18 @@ Route::middleware(['auth'])->group(function () {
     
     // SIM Order Management
     Route::resource('sim-orders', SimOrderController::class);
+    
+    // Online SIM Order Management
+    Route::resource('online-sim-orders', OnlineSimOrderController::class);
+    Route::patch('online-sim-orders/{onlineSimOrder}/approve', [OnlineSimOrderController::class, 'approve'])->name('online-sim-orders.approve');
+    Route::patch('online-sim-orders/{onlineSimOrder}/process', [OnlineSimOrderController::class, 'process'])->name('online-sim-orders.process');
+    Route::patch('online-sim-orders/{onlineSimOrder}/ship', [OnlineSimOrderController::class, 'ship'])->name('online-sim-orders.ship');
+    Route::patch('online-sim-orders/{onlineSimOrder}/deliver', [OnlineSimOrderController::class, 'markDelivered'])->name('online-sim-orders.deliver');
+    Route::patch('online-sim-orders/{onlineSimOrder}/cancel', [OnlineSimOrderController::class, 'cancel'])->name('online-sim-orders.cancel');
+    
+    // Delivery Service Management
+    Route::resource('delivery-services', DeliveryServiceController::class);
+    Route::patch('delivery-services/{deliveryService}/toggle', [DeliveryServiceController::class, 'toggle'])->name('delivery-services.toggle');
     
     // Role Management
     Route::resource('roles', RoleController::class);

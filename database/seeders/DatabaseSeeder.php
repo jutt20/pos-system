@@ -2,14 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $this->call([
@@ -18,6 +14,8 @@ class DatabaseSeeder extends Seeder
             SampleDataSeeder::class,
             SimStockSeeder::class,
             SimStockMovementSeeder::class,
+            DeliveryServiceSeeder::class,
+            OnlineSimOrderSeeder::class,
             ChatSeeder::class,
         ]);
     }

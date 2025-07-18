@@ -9,8 +9,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('sim_stocks', function (Blueprint $table) {
-            // Add foreign key constraint after users table exists
-            $table->foreign('activated_by')->references('id')->on('users')->onDelete('set null');
+            // Add foreign key constraint to employees table instead of users
+            $table->foreign('activated_by')->references('id')->on('employees')->onDelete('set null');
         });
     }
 
