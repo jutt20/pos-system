@@ -16,6 +16,7 @@ use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\Auth\RetailerLoginController;
 use App\Http\Controllers\Auth\CustomerLoginController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -82,6 +83,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('sim-stocks/bulk-update', [SimStockController::class, 'bulkUpdate'])->name('sim-stocks.bulk-update');
     Route::get('sim-stocks-export', [SimStockController::class, 'export'])->name('sim-stocks.export');
     Route::post('sim-stocks-import', [SimStockController::class, 'import'])->name('sim-stocks.import');
+    
+    // Chat System
+    Route::prefix('chat')->name('chat.')->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::post('/', [ChatController::class, 'store'])->name('store');
+        Route::get('/{chatRoom}', [ChatController::class, 'show'])->name('show');
+        Route::post('/{chatRoom}/messages', [ChatController::class, 'sendMessage'])->name('send-message');
+        Route::get('/{chatRoom}/messages', [ChatController::class, 'getMessages'])->name('get-messages');
+        Route::post('/{chatRoom}/join', [ChatController::class, 'joinRoom'])->name('join');
+        Route::post('/{chatRoom}/leave', [ChatController::class, 'leaveRoom'])->name('leave');
+    });
 });
 
 // Customer Portal Routes (Protected)

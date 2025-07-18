@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,12 +29,12 @@ class CustomerLoginController extends Controller
 
         $request->session()->regenerate();
 
-        // Check if user has customer role
+        // Check if user has customer role or permissions
         $user = Auth::user();
-        if (!$user->hasRole('customer')) {
+        if (!$user->hasRole('Customer') && !$user->can('access customer portal')) {
             Auth::logout();
             return back()->withErrors([
-                'username' => 'You do not have customer access.',
+                'email' => 'You do not have permission to access the customer portal.',
             ]);
         }
 
@@ -51,6 +52,6 @@ class CustomerLoginController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/customer/login');
+        return redirect()->route('customer.login');
     }
 }

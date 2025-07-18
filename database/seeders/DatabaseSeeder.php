@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
             QuickSeeder::class,
             SampleDataSeeder::class,
             SimStockSeeder::class,
+            SimStockMovementSeeder::class,
+            ChatSeeder::class,
         ]);
     }
 }

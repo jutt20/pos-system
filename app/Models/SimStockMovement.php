@@ -14,15 +14,16 @@ class SimStockMovement extends Model
         'sim_stock_id',
         'movement_type',
         'quantity',
-        'reference_number',
+        'previous_stock',
+        'new_stock',
+        'reason',
         'notes',
-        'user_id',
-        'location_from',
-        'location_to',
+        'created_by'
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function simStock(): BelongsTo
@@ -30,22 +31,30 @@ class SimStockMovement extends Model
         return $this->belongsTo(SimStock::class);
     }
 
-    public function user(): BelongsTo
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function getMovementTypeNameAttribute()
-    {
-        $types = [
-            'in' => 'Stock In',
-            'out' => 'Stock Out',
-            'transfer' => 'Transfer',
-            'adjustment' => 'Adjustment',
-            'damaged' => 'Damaged',
-            'expired' => 'Expired',
-        ];
-
-        return $types[$this->movement_type] ?? $this->movement_type;
+    public static function recordMovement(
+        int $simStockId,
+        string $movementType,
+        int $quantity,
+        int $previousStock,
+        int $newStock,
+        string $reason = null,
+        string $notes = null,
+        int $createdBy = null
+    ): self {
+        return self::create([
+            'sim_stock_id' => $simStockId,
+            'movement_type' => $movementType,
+            'quantity' => $quantity,
+            'previous_stock' => $previousStock,
+            'new_stock' => $newStock,
+            'reason' => $reason,
+            'notes' => $notes,
+            'created_by' => $createdBy,
+        ]);
     }
 }

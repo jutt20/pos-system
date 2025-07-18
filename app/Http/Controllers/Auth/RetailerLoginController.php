@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,12 +29,12 @@ class RetailerLoginController extends Controller
 
         $request->session()->regenerate();
 
-        // Check if user has retailer role
+        // Check if user has retailer role or permissions
         $user = Auth::user();
-        if (!$user->hasRole('retailer')) {
+        if (!$user->hasRole('Retailer') && !$user->can('access retailer portal')) {
             Auth::logout();
             return back()->withErrors([
-                'username' => 'You do not have retailer access.',
+                'email' => 'You do not have permission to access the retailer portal.',
             ]);
         }
 
@@ -51,6 +52,6 @@ class RetailerLoginController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/retailer/login');
+        return redirect()->route('retailer.login');
     }
 }
