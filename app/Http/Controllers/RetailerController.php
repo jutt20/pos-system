@@ -6,62 +6,145 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Activation;
 use App\Models\SimOrder;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RetailerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function dashboard()
     {
-        // Sample retailer data - in real app, this would be based on authenticated retailer
+        $user = Auth::user();
+        
+        // Get retailer's performance data
+        $todayStart = now()->startOfDay();
+        $monthStart = now()->startOfMonth();
+        
+        // Calculate commissions (assuming 2.5% commission rate)
+        $todayRevenue = Invoice::whereDate('created_at', today())
+            ->where('status', 'paid')
+            ->sum('total_amount');
+            
+        $totalRevenue = Invoice::where('status', 'paid')
+            ->sum('total_amount');
+            
+        $todayCommission = $todayRevenue * 0.025; // 2.5% commission
+        $totalCommission = $totalRevenue * 0.025;
+
         $stats = [
-            'account_balance' => 500.00,
-            'today_commission' => 0.00,
-            'total_commission' => 0.00,
-            'today_sales' => 247.50,
-            'total_transactions' => 23,
-            'completed_today' => 23,
+            'account_balance' => 1250.75,
+            'today_commission' => $todayCommission,
+            'total_commission' => $totalCommission,
+            'today_sales' => $todayRevenue,
+            'total_transactions' => Invoice::count(),
+            'completed_today' => Invoice::whereDate('created_at', today())->count(),
+            'pending_activations' => Activation::where('status', 'pending')->count(),
+            'monthly_target' => 5000.00,
+            'monthly_achieved' => Invoice::whereMonth('created_at', now()->month)
+                ->where('status', 'paid')
+                ->sum('total_amount'),
         ];
 
         // Recent transactions
-        $recentTransactions = [
-            [
-                'phone' => '+1-555-0123',
-                'carrier' => 'Verizon',
-                'amount' => 27.50,
-                'fee' => 2.50,
-                'status' => 'Completed',
-                'date' => now()->format('M d, Y H:i A')
-            ]
-        ];
+        $recentTransactions = Invoice::with('customer')
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function($invoice) {
+                return [
+                    'id' => $invoice->id,
+                    'customer_name' => $invoice->customer->name ?? 'Unknown',
+                    'phone' => $invoice->customer->phone ?? 'N/A',
+                    'amount' => $invoice->total_amount,
+                    'fee' => $invoice->total_amount * 0.025,
+                    'status' => ucfirst($invoice->status),
+                    'date' => $invoice->created_at->format('M d, Y H:i A'),
+                    'invoice_number' => $invoice->invoice_number,
+                ];
+            });
 
-        return view('retailer.dashboard', compact('stats', 'recentTransactions'));
+        // Monthly performance data for chart
+        $monthlyData = Invoice::selectRaw('MONTH(created_at) as month, SUM(total_amount) as revenue, COUNT(*) as transactions')
+            ->whereYear('created_at', now()->year)
+            ->where('status', 'paid')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        return view('retailer.dashboard', compact('stats', 'recentTransactions', 'monthlyData'));
     }
 
     public function transactions()
     {
+        $transactions = Invoice::with('customer')
+            ->latest()
+            ->paginate(20);
+
         $stats = [
-            'total_transactions' => 1,
-            'total_volume' => 27.50,
-            'completed_revenue' => 27.50,
+            'total_transactions' => Invoice::count(),
+            'total_volume' => Invoice::where('status', 'paid')->sum('total_amount'),
+            'completed_revenue' => Invoice::where('status', 'paid')->sum('total_amount'),
+            'pending_transactions' => Invoice::where('status', 'pending')->count(),
         ];
 
-        $transactions = [
-            [
-                'phone' => '+1-555-0123',
-                'carrier' => 'Verizon',
-                'amount' => 27.50,
-                'fee' => 2.50,
-                'status' => 'Completed',
-                'date' => 'Jul 18, 2025, 08:34 AM'
-            ]
-        ];
+        $transactionData = $transactions->map(function($invoice) {
+            return [
+                'id' => $invoice->id,
+                'customer_name' => $invoice->customer->name ?? 'Unknown',
+                'phone' => $invoice->customer->phone ?? 'N/A',
+                'amount' => $invoice->total_amount,
+                'fee' => $invoice->total_amount * 0.025,
+                'status' => ucfirst($invoice->status),
+                'date' => $invoice->created_at->format('M d, Y H:i A'),
+                'invoice_number' => $invoice->invoice_number,
+            ];
+        });
 
-        return view('retailer.transactions', compact('stats', 'transactions'));
+        return view('retailer.transactions', compact('stats', 'transactionData', 'transactions'));
     }
 
     public function reports()
     {
-        return view('retailer.reports');
+        $user = Auth::user();
+        
+        // Generate comprehensive reports
+        $monthlyStats = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $revenue = Invoice::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->where('status', 'paid')
+                ->sum('total_amount');
+                
+            $monthlyStats[] = [
+                'month' => $date->format('M Y'),
+                'revenue' => $revenue,
+                'commission' => $revenue * 0.025,
+                'transactions' => Invoice::whereYear('created_at', $date->year)
+                    ->whereMonth('created_at', $date->month)
+                    ->count(),
+            ];
+        }
+
+        // Top performing services
+        $topServices = Activation::selectRaw('plan_name, COUNT(*) as count, SUM(cost) as revenue')
+            ->groupBy('plan_name')
+            ->orderByDesc('revenue')
+            ->take(10)
+            ->get();
+
+        return view('retailer.reports', compact('monthlyStats', 'topServices'));
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('retailer.profile', compact('user'));
     }
 }
