@@ -10,8 +10,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -28,26 +26,6 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            animation: backgroundMove 20s ease-in-out infinite;
-        }
-
-        @keyframes backgroundMove {
-            0%, 100% { transform: translateX(0) translateY(0); }
-            25% { transform: translateX(-10px) translateY(-10px); }
-            50% { transform: translateX(10px) translateY(-5px); }
-            75% { transform: translateX(-5px) translateY(10px); }
         }
 
         .login-container {
@@ -57,9 +35,6 @@
             overflow: hidden;
             width: 100%;
             max-width: 400px;
-            display: flex;
-            position: relative;
-            z-index: 1;
             animation: slideUp 0.8s ease-out;
         }
 
@@ -90,19 +65,6 @@
             padding: 2rem;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #2d3748;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
         .form-control {
             border: 2px solid #e9ecef;
             border-radius: 10px;
@@ -128,23 +90,6 @@
             width: 100%;
             transition: all 0.3s;
             margin-top: 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-login:hover::before {
-            left: 100%;
         }
 
         .btn-login:hover {
@@ -153,34 +98,16 @@
             color: white;
         }
 
-        .btn-login:active {
-            transform: translateY(-1px);
+        .input-group-text {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
         }
 
-        .form-check {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .form-check-input {
-            width: 1rem;
-            height: 1rem;
-            border-radius: 0.25rem;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-        }
-
-        .form-check-input:checked {
-            background-color: #667eea;
-            border-color: #667eea;
-        }
-
-        .form-check-label {
-            color: #4a5568;
-            font-size: 0.875rem;
-            cursor: pointer;
+        .form-control.with-icon {
+            border-left: none;
+            border-radius: 0 10px 10px 0;
         }
 
         .portal-links {
@@ -188,13 +115,6 @@
             margin-top: 1.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid #e9ecef;
-        }
-
-        .portal-links p {
-            color: #718096;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
         }
 
         .portal-links a {
@@ -208,65 +128,13 @@
             color: #764ba2;
         }
 
-        .input-group {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group-text {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-right: none;
-        }
-
-        .form-control.with-icon {
-            border-left: none;
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 0.25rem;
-            margin-bottom: 1rem;
-            border: none;
-            animation: alertSlide 0.5s ease-out;
-        }
-
-        @keyframes alertSlide {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
         .alert-danger {
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            background: #fee2e2;
             color: #991b1b;
-            border-left: 0.25rem solid #dc2626;
-        }
-
-        @media (max-width: 768px) {
-            .login-container {
-                flex-direction: column;
-                margin: 10px;
-                min-height: auto;
-                max-width: 500px;
-            }
-
-            .login-header {
-                padding: 1.5rem;
-            }
-
-            .login-body {
-                padding: 1.5rem;
-            }
-
-            .portal-links p {
-                font-size: 0.875rem;
-            }
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 1rem;
         }
 
         .loading-overlay {
@@ -286,7 +154,7 @@
             width: 50px;
             height: 50px;
             border: 5px solid #f3f3f3;
-            border-top: 5px solid #8b5cf6;
+            border-top: 5px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -311,6 +179,14 @@
         </div>
         
         <div class="login-body">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    @foreach ($errors->all() as $error)
+                        {{ $error }}
+                    @endforeach
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('customer.login') }}" id="loginForm">
                 @csrf
                 
@@ -319,7 +195,8 @@
                         <span class="input-group-text">
                             <i class="fas fa-envelope"></i>
                         </span>
-                        <input id="username" type="text" class="form-control with-icon @error('login') is-invalid @enderror" name="login" value="{{ old('login') }}" placeholder="Email or Phone" required autofocus autocomplete="username">
+                        <input id="login" type="text" class="form-control with-icon @error('login') is-invalid @enderror" 
+                               name="login" value="{{ old('login') }}" placeholder="Email or Phone" required autofocus>
                     </div>
                     @error('login')
                         <div class="text-danger mt-1">{{ $message }}</div>
@@ -331,7 +208,8 @@
                         <span class="input-group-text">
                             <i class="fas fa-lock"></i>
                         </span>
-                        <input id="password" type="password" class="form-control with-icon @error('password') is-invalid @enderror" name="password" placeholder="Password" required autocomplete="current-password">
+                        <input id="password" type="password" class="form-control with-icon @error('password') is-invalid @enderror" 
+                               name="password" placeholder="Password" required>
                     </div>
                     @error('password')
                         <div class="text-danger mt-1">{{ $message }}</div>
@@ -368,17 +246,6 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', function() {
             document.getElementById('loadingOverlay').style.display = 'flex';
-        });
-
-        // Add some interactive effects
-        document.querySelectorAll('.form-control').forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.style.transform = 'scale(1.02)';
-            });
-            
-            input.addEventListener('blur', function() {
-                this.parentElement.style.transform = 'scale(1)';
-            });
         });
     </script>
 </body>
