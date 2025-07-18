@@ -10,16 +10,13 @@ return new class extends Migration
     {
         Schema::create('delivery_services', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // UPS, FedEx, DHL, USPS, etc.
-            $table->string('code')->unique(); // ups, fedex, dhl, usps
-            $table->string('tracking_url'); // URL template with {tracking_number} placeholder
-            $table->string('api_endpoint')->nullable(); // For API integration
-            $table->string('api_key')->nullable();
-            $table->decimal('base_cost', 8, 2)->default(0);
+            $table->string('name');
+            $table->string('code')->unique();
+            $table->decimal('base_cost', 8, 2);
             $table->decimal('per_item_cost', 8, 2)->default(0);
-            $table->integer('estimated_days')->default(3);
+            $table->integer('estimated_days');
+            $table->string('tracking_url')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->json('service_areas')->nullable(); // States/regions served
             $table->text('description')->nullable();
             $table->timestamps();
         });

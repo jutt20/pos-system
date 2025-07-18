@@ -7,66 +7,74 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ActivationController;
 use App\Http\Controllers\SimOrderController;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\OnlineSimOrderController;
+use App\Http\Controllers\DeliveryServiceController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SimStockController;
 use App\Http\Controllers\SimStockImportController;
 use App\Http\Controllers\SimStockExportController;
 use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\CustomerPortalController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\RetailerLoginController;
 use App\Http\Controllers\Auth\CustomerLoginController;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\OnlineSimOrderController;
-use App\Http\Controllers\DeliveryServiceController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
     return view('welcome');
-})->name('welcome');
-
-// Public order tracking
-Route::get('/track/{orderNumber}', [OnlineSimOrderController::class, 'track'])->name('orders.track');
-
-// Retailer Authentication Routes
-Route::prefix('retailer')->name('retailer.')->group(function () {
-    Route::get('/login', [RetailerLoginController::class, 'create'])->name('login');
-    Route::post('/login', [RetailerLoginController::class, 'store']);
-    Route::post('/logout', [RetailerLoginController::class, 'destroy'])->name('logout');
 });
 
-// Customer Authentication Routes
-Route::prefix('customer')->name('customer.')->group(function () {
-    Route::get('/login', [CustomerLoginController::class, 'create'])->name('login');
-    Route::post('/login', [CustomerLoginController::class, 'store']);
-    Route::post('/logout', [CustomerLoginController::class, 'destroy'])->name('logout');
-});
+// Public Online SIM Order Routes
+Route::get('/order-sim', [OnlineSimOrderController::class, 'publicCreate'])->name('sim-order.create');
+Route::post('/order-sim', [OnlineSimOrderController::class, 'publicStore'])->name('sim-order.store');
+Route::get('/track/{orderNumber}', [OnlineSimOrderController::class, 'track'])->name('online-sim-orders.track');
 
-// Staff Authentication Routes
-require __DIR__.'/auth.php';
+// Authentication Routes
+Route::get('/staff-login', function () {
+    return view('auth.login');
+})->name('staff.login');
 
-// Dashboard Routes (Protected)
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::get('/retailer-login', function () {
+    return view('auth.retailer-login');
+})->name('retailer.login');
+
+Route::post('/retailer-login', [RetailerLoginController::class, 'login']);
+
+Route::get('/customer-login', function () {
+    return view('auth.customer-login');
+})->name('customer.login');
+
+Route::post('/customer-login', [CustomerLoginController::class, 'login']);
+
+// Staff Dashboard Routes (Protected)
+Route::middleware(['auth:employee'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-// Admin Routes (Protected with permissions)
-Route::middleware(['auth'])->group(function () {
     
     // Customer Management
     Route::resource('customers', CustomerController::class);
+    Route::post('customers/{customer}/upload-document', [CustomerController::class, 'uploadDocument'])->name('customers.upload-document');
+    Route::delete('customers/{customer}/documents/{document}', [CustomerController::class, 'deleteDocument'])->name('customers.delete-document');
     
     // Employee Management
     Route::resource('employees', EmployeeController::class);
     
     // Invoice Management
     Route::resource('invoices', InvoiceController::class);
-    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
+    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'generatePDF'])->name('invoices.pdf');
     
     // Activation Management
     Route::resource('activations', ActivationController::class);
@@ -76,55 +84,45 @@ Route::middleware(['auth'])->group(function () {
     
     // Online SIM Order Management
     Route::resource('online-sim-orders', OnlineSimOrderController::class);
-    Route::patch('online-sim-orders/{onlineSimOrder}/approve', [OnlineSimOrderController::class, 'approve'])->name('online-sim-orders.approve');
-    Route::patch('online-sim-orders/{onlineSimOrder}/process', [OnlineSimOrderController::class, 'process'])->name('online-sim-orders.process');
-    Route::patch('online-sim-orders/{onlineSimOrder}/ship', [OnlineSimOrderController::class, 'ship'])->name('online-sim-orders.ship');
-    Route::patch('online-sim-orders/{onlineSimOrder}/deliver', [OnlineSimOrderController::class, 'markDelivered'])->name('online-sim-orders.deliver');
-    Route::patch('online-sim-orders/{onlineSimOrder}/cancel', [OnlineSimOrderController::class, 'cancel'])->name('online-sim-orders.cancel');
+    Route::post('online-sim-orders/{onlineSimOrder}/approve', [OnlineSimOrderController::class, 'approve'])->name('online-sim-orders.approve');
+    Route::patch('online-sim-orders/{onlineSimOrder}/status', [OnlineSimOrderController::class, 'updateStatus'])->name('online-sim-orders.update-status');
     
     // Delivery Service Management
     Route::resource('delivery-services', DeliveryServiceController::class);
-    Route::patch('delivery-services/{deliveryService}/toggle', [DeliveryServiceController::class, 'toggle'])->name('delivery-services.toggle');
+    Route::post('delivery-services/{deliveryService}/toggle', [DeliveryServiceController::class, 'toggle'])->name('delivery-services.toggle');
+    
+    // Reports
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     
     // Role Management
     Route::resource('roles', RoleController::class);
     
-    // Reports
-    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('reports/overview', [ReportController::class, 'overview'])->name('reports.overview');
-    Route::post('reports/export', [ReportController::class, 'export'])->name('reports.export');
-    
     // SIM Stock Management
     Route::resource('sim-stocks', SimStockController::class);
-    Route::patch('sim-stocks/{simStock}/activate', [SimStockController::class, 'activate'])->name('sim-stocks.activate');
-    Route::post('sim-stocks/bulk-update', [SimStockController::class, 'bulkUpdate'])->name('sim-stocks.bulk-update');
-    Route::get('sim-stocks-export', [SimStockController::class, 'export'])->name('sim-stocks.export');
-    Route::post('sim-stocks-import', [SimStockController::class, 'import'])->name('sim-stocks.import');
+    Route::get('/sim-stocks/import/form', [SimStockImportController::class, 'showImportForm'])->name('sim-stocks.import.form');
+    Route::post('/sim-stocks/import', [SimStockImportController::class, 'import'])->name('sim-stocks.import');
+    Route::get('/sim-stocks/export', [SimStockExportController::class, 'export'])->name('sim-stocks.export');
     
     // Chat System
-    Route::prefix('chat')->name('chat.')->group(function () {
-        Route::get('/', [ChatController::class, 'index'])->name('index');
-        Route::post('/', [ChatController::class, 'store'])->name('store');
-        Route::get('/{chatRoom}', [ChatController::class, 'show'])->name('show');
-        Route::post('/{chatRoom}/messages', [ChatController::class, 'sendMessage'])->name('send-message');
-        Route::get('/{chatRoom}/messages', [ChatController::class, 'getMessages'])->name('get-messages');
-        Route::post('/{chatRoom}/join', [ChatController::class, 'joinRoom'])->name('join');
-        Route::post('/{chatRoom}/leave', [ChatController::class, 'leaveRoom'])->name('leave');
-    });
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{room}/message', [ChatController::class, 'sendMessage'])->name('chat.send-message');
 });
 
-// Customer Portal Routes (Protected)
-Route::middleware(['auth'])->prefix('customer-portal')->name('customer-portal.')->group(function () {
-    Route::get('/', [CustomerPortalController::class, 'dashboard'])->name('dashboard');
-    Route::get('/activations', [CustomerPortalController::class, 'activations'])->name('activations');
+// Retailer Dashboard Routes
+Route::middleware(['auth:employee', 'role:Retailer'])->prefix('retailer')->name('retailer.')->group(function () {
+    Route::get('/dashboard', [RetailerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/reports', [RetailerController::class, 'reports'])->name('reports');
+    Route::get('/transactions', [RetailerController::class, 'transactions'])->name('transactions');
+});
+
+// Customer Portal Routes
+Route::middleware(['auth:customer'])->prefix('customer')->name('customer.')->group(function () {
+    Route::get('/dashboard', [CustomerPortalController::class, 'dashboard'])->name('dashboard');
     Route::get('/orders', [CustomerPortalController::class, 'orders'])->name('orders');
     Route::get('/invoices', [CustomerPortalController::class, 'invoices'])->name('invoices');
+    Route::get('/profile', [CustomerPortalController::class, 'profile'])->name('profile');
 });
 
-// Retailer Portal Routes (Protected)
-Route::middleware(['auth'])->prefix('retailer')->name('retailer.')->group(function () {
-    Route::get('/', [RetailerController::class, 'dashboard'])->name('dashboard');
-    Route::get('/transactions', [RetailerController::class, 'transactions'])->name('transactions');
-    Route::get('/reports', [RetailerController::class, 'reports'])->name('reports');
-    Route::get('/profile', [RetailerController::class, 'profile'])->name('profile');
-});
+require __DIR__.'/auth.php';

@@ -23,10 +23,16 @@ class RolePermissionSeeder extends Seeder
             'manage invoices',
             'manage activations',
             'manage orders',
+            'manage online orders',
+            'manage delivery services',
             'view reports',
             'manage documents',
             'export data',
             'system settings',
+            'manage sim stock',
+            'view retailer dashboard',
+            'manage retailer sales',
+            'track commissions',
         ];
 
         foreach ($permissions as $permission) {
@@ -40,6 +46,7 @@ class RolePermissionSeeder extends Seeder
         $accountantRole = Role::create(['name' => 'Accountant', 'guard_name' => 'employee']);
         $salesRole = Role::create(['name' => 'Sales Agent', 'guard_name' => 'employee']);
         $supportRole = Role::create(['name' => 'Technical Support', 'guard_name' => 'employee']);
+        $retailerRole = Role::create(['name' => 'Retailer', 'guard_name' => 'employee']);
 
         // Super Admin gets all permissions
         $superAdminRole->givePermissionTo(Permission::all());
@@ -52,9 +59,12 @@ class RolePermissionSeeder extends Seeder
             'manage invoices',
             'manage activations',
             'manage orders',
+            'manage online orders',
+            'manage delivery services',
             'view reports',
             'manage documents',
             'export data',
+            'manage sim stock',
         ]);
 
         // Manager gets operational permissions
@@ -64,9 +74,11 @@ class RolePermissionSeeder extends Seeder
             'manage invoices',
             'manage activations',
             'manage orders',
+            'manage online orders',
             'view reports',
             'manage documents',
             'export data',
+            'manage sim stock',
         ]);
 
         // Accountant gets billing and reporting permissions
@@ -83,6 +95,7 @@ class RolePermissionSeeder extends Seeder
             'manage activations',
             'manage documents',
             'manage invoices',
+            'manage sim stock',
         ]);
 
         // Technical Support gets customer support permissions
@@ -90,37 +103,48 @@ class RolePermissionSeeder extends Seeder
             'manage customers',
             'manage activations',
             'manage documents',
+            'manage sim stock',
+        ]);
+
+        // Retailer gets retailer-specific permissions
+        $retailerRole->givePermissionTo([
+            'view retailer dashboard',
+            'manage retailer sales',
+            'track commissions',
+            'manage customers',
+            'manage activations',
+            'manage invoices',
         ]);
 
         // Create Super Admin user
-        // $superAdmin = Employee::create([
-        //     'name' => 'Super Administrator',
-        //     'email' => 'superadmin@nexitel.com',
-        //     'username' => 'superadmin',
-        //     'password' => Hash::make('superadmin123'),
-        //     'phone' => '+1234567888',
-        // ]);
-        // $superAdmin->assignRole('Super Admin');
+        $superAdmin = Employee::create([
+            'name' => 'Super Administrator',
+            'email' => 'superadmin@nexitel.com',
+            'username' => 'superadmin',
+            'password' => Hash::make('superadmin123'),
+            'phone' => '+1234567888',
+        ]);
+        $superAdmin->assignRole('Super Admin');
 
         // Create default admin user
-        // $admin = Employee::create([
-        //     'name' => 'System Administrator',
-        //     'email' => 'admin@nexitel.com',
-        //     'username' => 'admin',
-        //     'password' => Hash::make('password'),
-        //     'phone' => '+1234567890',
-        // ]);
-        // $admin->assignRole('Admin');
+        $admin = Employee::create([
+            'name' => 'System Administrator',
+            'email' => 'admin@nexitel.com',
+            'username' => 'admin',
+            'password' => Hash::make('password'),
+            'phone' => '+1234567890',
+        ]);
+        $admin->assignRole('Admin');
 
         // Create sample employees
-        // $manager = Employee::create([
-        //     'name' => 'John Manager',
-        //     'email' => 'manager@nexitel.com',
-        //     'username' => 'manager',
-        //     'password' => Hash::make('password'),
-        //     'phone' => '+1234567891',
-        // ]);
-        // $manager->assignRole('Manager');
+        $manager = Employee::create([
+            'name' => 'John Manager',
+            'email' => 'manager@nexitel.com',
+            'username' => 'manager',
+            'password' => Hash::make('password'),
+            'phone' => '+1234567891',
+        ]);
+        $manager->assignRole('Manager');
 
         $accountant = Employee::create([
             'name' => 'Sarah Accountant',
@@ -131,14 +155,14 @@ class RolePermissionSeeder extends Seeder
         ]);
         $accountant->assignRole('Accountant');
 
-        // $sales = Employee::create([
-        //     'name' => 'Mike Sales',
-        //     'email' => 'sales@nexitel.com',
-        //     'username' => 'sales',
-        //     'password' => Hash::make('password'),
-        //     'phone' => '+1234567893',
-        // ]);
-        // $sales->assignRole('Sales Agent');
+        $sales = Employee::create([
+            'name' => 'Mike Sales',
+            'email' => 'sales@nexitel.com',
+            'username' => 'sales',
+            'password' => Hash::make('password'),
+            'phone' => '+1234567893',
+        ]);
+        $sales->assignRole('Sales Agent');
 
         $support = Employee::create([
             'name' => 'Lisa Support',
@@ -149,6 +173,15 @@ class RolePermissionSeeder extends Seeder
         ]);
         $support->assignRole('Technical Support');
 
+        $retailer = Employee::create([
+            'name' => 'David Retailer',
+            'email' => 'retailer@nexitel.com',
+            'username' => 'retailer',
+            'password' => Hash::make('password'),
+            'phone' => '+1234567895',
+        ]);
+        $retailer->assignRole('Retailer');
+
         echo "Roles and permissions created successfully!\n";
         echo "Super Admin: superadmin / superadmin123\n";
         echo "Admin: admin / password\n";
@@ -156,5 +189,6 @@ class RolePermissionSeeder extends Seeder
         echo "Accountant: accountant / password\n";
         echo "Sales: sales / password\n";
         echo "Support: support / password\n";
+        echo "Retailer: retailer / password\n";
     }
 }

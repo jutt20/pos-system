@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\SimStock;
 use App\Models\SimStockMovement;
-use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Database\Seeder;
 
 class SimStockMovementSeeder extends Seeder
@@ -12,9 +12,9 @@ class SimStockMovementSeeder extends Seeder
     public function run(): void
     {
         $simStocks = SimStock::all();
-        $users = User::all();
+        $employees = Employee::all();
         
-        if ($simStocks->isEmpty() || $users->isEmpty()) {
+        if ($simStocks->isEmpty() || $employees->isEmpty()) {
             return;
         }
 
@@ -65,7 +65,7 @@ class SimStockMovementSeeder extends Seeder
                     'new_stock' => $newStock,
                     'reason' => $reasons[array_rand($reasons)],
                     'notes' => 'Automated seeder movement for testing',
-                    'created_by' => $users->random()->id,
+                    'created_by' => $employees->random()->id,
                     'created_at' => now()->subDays(rand(0, 30)),
                 ]);
                 

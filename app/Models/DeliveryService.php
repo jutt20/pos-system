@@ -12,32 +12,28 @@ class DeliveryService extends Model
     protected $fillable = [
         'name',
         'code',
-        'tracking_url',
-        'api_endpoint',
-        'api_key',
         'base_cost',
         'per_item_cost',
         'estimated_days',
+        'tracking_url',
         'is_active',
-        'service_areas',
-        'description'
+        'description',
     ];
 
     protected $casts = [
         'base_cost' => 'decimal:2',
         'per_item_cost' => 'decimal:2',
         'is_active' => 'boolean',
-        'service_areas' => 'array'
     ];
+
+    public function onlineSimOrders()
+    {
+        return $this->hasMany(OnlineSimOrder::class);
+    }
 
     public function calculateCost($quantity = 1)
     {
         return $this->base_cost + ($this->per_item_cost * $quantity);
-    }
-
-    public function getTrackingUrl($trackingNumber)
-    {
-        return str_replace('{tracking_number}', $trackingNumber, $this->tracking_url);
     }
 
     public function scopeActive($query)
