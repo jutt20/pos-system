@@ -2,54 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Activation;
-use App\Models\SimOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerPortalController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:customer');
+    }
+
     public function dashboard()
     {
-        $user = Auth::user();
+        $customer = Auth::guard('customer')->user();
         
-        // Get customer record
-        $customer = Customer::where('email', $user->email)->first();
-        
-        if (!$customer) {
-            // Create customer record if doesn't exist
-            $customer = Customer::create([
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone ?? '',
-                'address' => '',
-                'created_by' => 1 // Admin user
-            ]);
-        }
-
         // Get customer statistics
-        $totalInvoices = Invoice::where('customer_id', $customer->id)->count();
-        $totalSpent = Invoice::where('customer_id', $customer->id)
-            ->where('status', 'paid')
-            ->sum('total_amount');
-        $activeServices = Activation::where('customer_id', $customer->id)
-            ->where('status', 'active')
-            ->count();
-        $pendingOrders = SimOrder::where('customer_id', $customer->id)
-            ->where('status', 'pending')
-            ->count();
-
+        $totalInvoices = $customer->invoices()->count();
+        $paidInvoices = $customer->invoices()->where('status', 'paid')->count();
+        $pendingInvoices = $customer->invoices()->where('status', 'draft')->count();
+        $overdueInvoices = $customer->invoices()->where('status', 'overdue')->count();
+        
+        $totalSpent = $customer->invoices()->where('status', 'paid')->sum('total_amount');
+        $currentBalance = $customer->balance;
+        
+        $activeServices = $customer->activations()->where('status', 'active')->count();
+        
         // Recent invoices
-        $recentInvoices = Invoice::where('customer_id', $customer->id)
-            ->with('items')
+        $recentInvoices = $customer->invoices()
+            ->with('employee')
             ->latest()
             ->take(5)
             ->get();
-
+            
         // Recent activations
-        $recentActivations = Activation::where('customer_id', $customer->id)
+        $recentActivations = $customer->activations()
+            ->with('employee')
             ->latest()
             ->take(5)
             ->get();
@@ -57,60 +46,61 @@ class CustomerPortalController extends Controller
         return view('customer-portal.dashboard', compact(
             'customer',
             'totalInvoices',
+            'paidInvoices',
+            'pendingInvoices',
+            'overdueInvoices',
             'totalSpent',
+            'currentBalance',
             'activeServices',
-            'pendingOrders',
             'recentInvoices',
             'recentActivations'
         ));
     }
 
+    public function invoices()
+    {
+        $customer = Auth::guard('customer')->user();
+        $invoices = $customer->invoices()
+            ->with('employee')
+            ->latest()
+            ->paginate(15);
+
+        return view('customer-portal.invoices', compact('invoices'));
+    }
+
     public function activations()
     {
-        $user = Auth::user();
-        $customer = Customer::where('email', $user->email)->first();
-        
-        if (!$customer) {
-            return redirect()->route('customer-portal.dashboard');
-        }
-
-        $activations = Activation::where('customer_id', $customer->id)
+        $customer = Auth::guard('customer')->user();
+        $activations = $customer->activations()
+            ->with('employee')
             ->latest()
-            ->paginate(20);
+            ->paginate(15);
 
         return view('customer-portal.activations', compact('activations'));
     }
 
-    public function orders()
+    public function profile()
     {
-        $user = Auth::user();
-        $customer = Customer::where('email', $user->email)->first();
-        
-        if (!$customer) {
-            return redirect()->route('customer-portal.dashboard');
-        }
-
-        $orders = SimOrder::where('customer_id', $customer->id)
-            ->latest()
-            ->paginate(20);
-
-        return view('customer-portal.orders', compact('orders'));
+        $customer = Auth::guard('customer')->user();
+        return view('customer-portal.profile', compact('customer'));
     }
 
-    public function invoices()
+    public function updateProfile(Request $request)
     {
-        $user = Auth::user();
-        $customer = Customer::where('email', $user->email)->first();
+        $customer = Auth::guard('customer')->user();
         
-        if (!$customer) {
-            return redirect()->route('customer-portal.dashboard');
-        }
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:customers,email,' . $customer->id,
+            'phone' => 'nullable|string|max:20',
+            'company' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+        ]);
 
-        $invoices = Invoice::where('customer_id', $customer->id)
-            ->with('items')
-            ->latest()
-            ->paginate(20);
+        $customer->update($request->only([
+            'name', 'email', 'phone', 'company', 'address'
+        ]));
 
-        return view('customer-portal.invoices', compact('invoices'));
+        return back()->with('success', 'Profile updated successfully!');
     }
 }

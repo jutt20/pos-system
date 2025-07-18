@@ -12,199 +12,110 @@ class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
-        // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-
-        // Create permissions only if they don't exist
+        // Create permissions if they don't exist
         $permissions = [
             'manage employees',
             'manage customers',
-            'manage billing',
             'manage invoices',
             'manage activations',
-            'manage orders',
-            'manage online orders',
-            'manage delivery services',
+            'manage sim orders',
+            'manage sim stocks',
             'view reports',
-            'manage documents',
+            'manage roles',
             'export data',
-            'system settings',
-            'manage sim stock',
-            'view retailer dashboard',
-            'manage retailer sales',
-            'track commissions',
+            'import data',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(
-                ['name' => $permission, 'guard_name' => 'employee']
-            );
+            Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'employee'
+            ]);
         }
 
-        // Create roles only if they don't exist
-        $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'employee']);
-        $adminRole = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'employee']);
-        $managerRole = Role::firstOrCreate(['name' => 'Manager', 'guard_name' => 'employee']);
-        $accountantRole = Role::firstOrCreate(['name' => 'Accountant', 'guard_name' => 'employee']);
-        $salesRole = Role::firstOrCreate(['name' => 'Sales Agent', 'guard_name' => 'employee']);
-        $supportRole = Role::firstOrCreate(['name' => 'Technical Support', 'guard_name' => 'employee']);
-        $retailerRole = Role::firstOrCreate(['name' => 'Retailer', 'guard_name' => 'employee']);
-
-        // Super Admin gets all permissions
-        $superAdminRole->syncPermissions(Permission::all());
-        
-        // Admin gets most permissions except system settings
-        $adminRole->syncPermissions([
-            'manage employees',
-            'manage customers',
-            'manage billing',
-            'manage invoices',
-            'manage activations',
-            'manage orders',
-            'manage online orders',
-            'manage delivery services',
-            'view reports',
-            'manage documents',
-            'export data',
-            'manage sim stock',
+        // Create roles if they don't exist
+        $adminRole = Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'employee'
         ]);
 
-        // Manager gets operational permissions
+        $managerRole = Role::firstOrCreate([
+            'name' => 'manager',
+            'guard_name' => 'employee'
+        ]);
+
+        $retailerRole = Role::firstOrCreate([
+            'name' => 'retailer',
+            'guard_name' => 'employee'
+        ]);
+
+        $staffRole = Role::firstOrCreate([
+            'name' => 'staff',
+            'guard_name' => 'employee'
+        ]);
+
+        // Assign permissions to roles
+        $adminRole->syncPermissions($permissions);
+        
         $managerRole->syncPermissions([
             'manage customers',
-            'manage billing',
             'manage invoices',
             'manage activations',
-            'manage orders',
-            'manage online orders',
-            'view reports',
-            'manage documents',
-            'export data',
-            'manage sim stock',
-        ]);
-
-        // Accountant gets billing and reporting permissions
-        $accountantRole->syncPermissions([
-            'manage billing',
-            'manage invoices',
+            'manage sim orders',
             'view reports',
             'export data',
         ]);
 
-        // Sales Agent gets customer and activation permissions
-        $salesRole->syncPermissions([
-            'manage customers',
-            'manage activations',
-            'manage documents',
-            'manage invoices',
-            'manage sim stock',
-        ]);
-
-        // Technical Support gets customer support permissions
-        $supportRole->syncPermissions([
-            'manage customers',
-            'manage activations',
-            'manage documents',
-            'manage sim stock',
-        ]);
-
-        // Retailer gets retailer-specific permissions
         $retailerRole->syncPermissions([
-            'view retailer dashboard',
-            'manage retailer sales',
-            'track commissions',
             'manage customers',
-            'manage activations',
             'manage invoices',
+            'manage activations',
+            'view reports',
         ]);
 
-        // Create Super Admin user only if doesn't exist
-        $superAdmin = Employee::firstOrCreate(
-            ['email' => 'superadmin@nexitel.com'],
-            [
-                'name' => 'Super Administrator',
-                'username' => 'superadmin',
-                'password' => Hash::make('superadmin123'),
-                'phone' => '+1234567888',
-            ]
-        );
-        $superAdmin->assignRole('Super Admin');
+        $staffRole->syncPermissions([
+            'manage customers',
+            'manage invoices',
+            'manage activations',
+        ]);
 
-        // Create default admin user only if doesn't exist
-        $admin = Employee::firstOrCreate(
-            ['email' => 'admin@nexitel.com'],
-            [
-                'name' => 'System Administrator',
-                'username' => 'admin',
-                'password' => Hash::make('password'),
-                'phone' => '+1234567890',
-            ]
-        );
-        $admin->assignRole('Admin');
+        // Create default admin user if doesn't exist
+        $admin = Employee::firstOrCreate([
+            'username' => 'admin'
+        ], [
+            'name' => 'System Administrator',
+            'email' => 'admin@pos.com',
+            'password' => Hash::make('password'),
+            'phone' => '1234567890',
+            'status' => 'active',
+        ]);
 
-        // Create sample employees only if they don't exist
-        $manager = Employee::firstOrCreate(
-            ['email' => 'manager@nexitel.com'],
-            [
-                'name' => 'John Manager',
-                'username' => 'manager',
-                'password' => Hash::make('password'),
-                'phone' => '+1234567891',
-            ]
-        );
-        $manager->assignRole('Manager');
+        $admin->assignRole('admin');
 
-        $accountant = Employee::firstOrCreate(
-            ['email' => 'accountant@nexitel.com'],
-            [
-                'name' => 'Sarah Accountant',
-                'username' => 'accountant',
-                'password' => Hash::make('password'),
-                'phone' => '+1234567892',
-            ]
-        );
-        $accountant->assignRole('Accountant');
+        // Create default retailer user if doesn't exist
+        $retailer = Employee::firstOrCreate([
+            'username' => 'retailer'
+        ], [
+            'name' => 'Default Retailer',
+            'email' => 'retailer@pos.com',
+            'password' => Hash::make('password'),
+            'phone' => '1234567891',
+            'status' => 'active',
+        ]);
 
-        $sales = Employee::firstOrCreate(
-            ['email' => 'sales@nexitel.com'],
-            [
-                'name' => 'Mike Sales',
-                'username' => 'sales',
-                'password' => Hash::make('password'),
-                'phone' => '+1234567893',
-            ]
-        );
-        $sales->assignRole('Sales Agent');
+        $retailer->assignRole('retailer');
 
-        $support = Employee::firstOrCreate(
-            ['email' => 'support@nexitel.com'],
-            [
-                'name' => 'Lisa Support',
-                'username' => 'support',
-                'password' => Hash::make('password'),
-                'phone' => '+1234567894',
-            ]
-        );
-        $support->assignRole('Technical Support');
+        // Create default staff user if doesn't exist
+        $staff = Employee::firstOrCreate([
+            'username' => 'staff'
+        ], [
+            'name' => 'Default Staff',
+            'email' => 'staff@pos.com',
+            'password' => Hash::make('password'),
+            'phone' => '1234567892',
+            'status' => 'active',
+        ]);
 
-        $retailer = Employee::firstOrCreate(
-            ['email' => 'retailer@nexitel.com'],
-            [
-                'name' => 'David Retailer',
-                'username' => 'retailer',
-                'password' => Hash::make('password'),
-                'phone' => '+1234567895',
-            ]
-        );
-        $retailer->assignRole('Retailer');
-
-        echo "Roles and permissions created successfully!\n";
-        echo "Super Admin: superadmin / superadmin123\n";
-        echo "Admin: admin / password\n";
-        echo "Manager: manager / password\n";
-        echo "Accountant: accountant / password\n";
-        echo "Sales: sales / password\n";
-        echo "Support: support / password\n";
-        echo "Retailer: retailer / password\n";
+        $staff->assignRole('staff');
     }
 }

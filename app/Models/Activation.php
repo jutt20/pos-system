@@ -12,6 +12,7 @@ class Activation extends Model
     protected $fillable = [
         'customer_id',
         'employee_id',
+        'created_by',
         'brand',
         'plan',
         'sku',
@@ -39,6 +40,11 @@ class Activation extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(Employee::class, 'created_by');
     }
 
     public function getStatusColorAttribute()

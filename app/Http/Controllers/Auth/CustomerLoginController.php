@@ -9,7 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class CustomerLoginController extends Controller
 {
-    public function create()
+    public function showLoginForm()
     {
         return view('auth.customer-login');
     }
@@ -17,15 +17,14 @@ class CustomerLoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required|string',
+            'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // Try to authenticate with email or username
-        $loginField = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         
         $credentials = [
-            $loginField => $request->username,
+            $loginField => $request->login,
             'password' => $request->password,
         ];
 
@@ -35,16 +34,15 @@ class CustomerLoginController extends Controller
         }
 
         throw ValidationException::withMessages([
-            'username' => 'The provided credentials do not match our records.',
+            'login' => __('auth.failed'),
         ]);
     }
 
-    public function destroy(Request $request)
+    public function logout(Request $request)
     {
         Auth::guard('customer')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect()->route('customer.login');
     }
 }

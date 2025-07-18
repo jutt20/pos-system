@@ -14,7 +14,7 @@ class RetailerController extends Controller
 {
     public function dashboard()
     {
-        $user = Auth::user();
+        $user = Auth::guard('employee')->user();
         
         // Get retailer's statistics
         $totalSales = Invoice::where('created_by', $user->id)
@@ -28,9 +28,9 @@ class RetailerController extends Controller
             
         $totalCustomers = Customer::where('created_by', $user->id)->count();
         
-        $activeActivations = Activation::whereHas('customer', function($query) use ($user) {
-            $query->where('created_by', $user->id);
-        })->where('status', 'active')->count();
+        $activeActivations = Activation::where('created_by', $user->id)
+            ->where('status', 'active')
+            ->count();
 
         // Recent transactions
         $recentTransactions = Invoice::where('created_by', $user->id)
@@ -66,7 +66,7 @@ class RetailerController extends Controller
 
     public function transactions()
     {
-        $user = Auth::user();
+        $user = Auth::guard('employee')->user();
         
         $transactions = Invoice::where('created_by', $user->id)
             ->with(['customer', 'items'])
@@ -78,7 +78,7 @@ class RetailerController extends Controller
 
     public function reports()
     {
-        $user = Auth::user();
+        $user = Auth::guard('employee')->user();
         
         // Sales summary
         $totalSales = Invoice::where('created_by', $user->id)
@@ -102,7 +102,9 @@ class RetailerController extends Controller
 
         // Top customers
         $topCustomers = Customer::where('created_by', $user->id)
-            ->withSum('invoices', 'total_amount')
+            ->withSum(['invoices' => function($query) {
+                $query->where('status', 'paid');
+            }], 'total_amount')
             ->orderBy('invoices_sum_total_amount', 'desc')
             ->take(10)
             ->get();
@@ -120,7 +122,7 @@ class RetailerController extends Controller
 
     public function profile()
     {
-        $user = Auth::user();
+        $user = Auth::guard('employee')->user();
         return view('retailer.profile', compact('user'));
     }
 }

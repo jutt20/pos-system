@@ -15,6 +15,7 @@ class Invoice extends Model
         'invoice_number',
         'customer_id',
         'employee_id',
+        'created_by',
         'invoice_date',
         'due_date',
         'subtotal',
@@ -43,6 +44,11 @@ class Invoice extends Model
         return $this->belongsTo(Employee::class);
     }
 
+    public function createdBy()
+    {
+        return $this->belongsTo(Employee::class, 'created_by');
+    }
+
     public function items()
     {
         return $this->hasMany(InvoiceItem::class);
@@ -54,7 +60,6 @@ class Invoice extends Model
         $next = $lastNumber + 1;
         return 'INV-' . str_pad($next, 6, '0', STR_PAD_LEFT);
     }
-
 
     public function getFormattedInvoiceDateAttribute()
     {

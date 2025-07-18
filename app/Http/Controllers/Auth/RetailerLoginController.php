@@ -9,7 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class RetailerLoginController extends Controller
 {
-    public function create()
+    public function showLoginForm()
     {
         return view('auth.retailer-login');
     }
@@ -21,38 +21,33 @@ class RetailerLoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        $credentials = [
-            'username' => $request->username,
-            'password' => $request->password,
-        ];
+        $credentials = $request->only('username', 'password');
 
         if (Auth::guard('employee')->attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-
             $user = Auth::guard('employee')->user();
             
             // Check if user has retailer role
-            if (!$user->hasRole('Retailer')) {
+            if ($user->hasRole('retailer')) {
+                $request->session()->regenerate();
+                return redirect()->intended(route('retailer.dashboard'));
+            } else {
                 Auth::guard('employee')->logout();
                 throw ValidationException::withMessages([
                     'username' => 'You do not have retailer access.',
                 ]);
             }
-
-            return redirect()->intended(route('retailer.dashboard'));
         }
 
         throw ValidationException::withMessages([
-            'username' => 'The provided credentials do not match our records.',
+            'username' => __('auth.failed'),
         ]);
     }
 
-    public function destroy(Request $request)
+    public function logout(Request $request)
     {
         Auth::guard('employee')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect()->route('retailer.login');
     }
 }

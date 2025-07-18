@@ -5,8 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>@yield('title', 'POS System')</title>
+    <title>{{ config('app.name', 'POS System') }}</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,6 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ asset('css/enhanced-styles.css') }}" rel="stylesheet">
 
     <style>
         :root {
@@ -332,8 +333,8 @@
             left: 0;
             top: 0;
             width: var(--sidebar-width);
-            height: 100vh;
-            background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+            height: calc(100vh - 56px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 0;
             overflow-y: auto;
@@ -454,7 +455,7 @@
         .sidebar-nav a {
             display: flex;
             align-items: center;
-            padding: 16px 20px;
+            padding: 0.75rem 1rem;
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             transition: all 0.3s;
@@ -464,18 +465,11 @@
             white-space: nowrap;
         }
 
-        .sidebar-nav a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-left-color: #3b82f6;
-            transform: translateX(4px);
-        }
-
+        .sidebar-nav a:hover,
         .sidebar-nav a.active {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
             color: white;
-            border-left-color: #3b82f6;
-            box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
         }
 
         .sidebar-nav i {
@@ -488,8 +482,8 @@
         /* Main Content */
         .main-content {
             margin-left: var(--sidebar-width);
-            min-height: 100vh;
-            background: transparent;
+            min-height: calc(100vh - 56px);
+            background: #f8f9fa;
             padding-top: 20px;
         }
 
@@ -888,7 +882,7 @@
         }
 
         .alert-danger {
-            background: lineargradient(135deg, #fef2f2, #fee2e2);
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
             color: #991b1b;
         }
 
@@ -1032,227 +1026,161 @@
 </head>
 
 <body>
-    <!-- Enhanced Header -->
-    <div class="app-header">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
+                <img src="{{ asset('images/logo.jpg') }}" alt="Logo" class="me-2">
+                <span>POS System</span>
+            </a>
+            
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="d-none d-md-block">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('dashboard') }}" class="text-white-50">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    @yield('breadcrumb')
+                </ol>
+            </nav>
 
-        <div class="header-content">
-            <div class="header-left">
-                <div class="header-logo">
-                    <a href="{{ route('dashboard') }}" class="header-brand">
-                        <img src="{{ asset('images/logo.jpg') }}" alt="Nexitel Logo" class="header-logo-img">
-                        <div class="header-brand-text">
-                            <span class="brand-name">Nexitel POS</span>
-                            <span class="brand-subtitle">Point of Sales</span>
-                        </div>
-                    </a>
-                </div>
-
-                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
+            <!-- User Menu -->
+            <div class="dropdown">
+                <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-user-circle me-1"></i>
+                    {{ Auth::user()->name }}
                 </button>
-
-                <button class="desktop-menu-toggle" onclick="toggleSidebarCollapse()">
-                    <i class="fas fa-bars"></i>
-                </button>
-
-                <div class="breadcrumb-nav">
-                    <a href="{{ route('dashboard') }}">
-                        <i class="fas fa-home"></i>
-                    </a>
-                    @if(!request()->routeIs('dashboard'))
-                    <span class="separator">•</span>
-                    <span class="breadcrumb-current">@yield('title', 'Page')</span>
-                    @endif
-                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                            <i class="fas fa-user-edit me-2"></i>Profile
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </nav>
 
-            <div class="header-right">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+                               href="{{ route('dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        
+                        @can('manage customers')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}" 
+                               href="{{ route('customers.index') }}">
+                                <i class="fas fa-users me-2"></i>Customers
+                            </a>
+                        </li>
+                        @endcan
 
-                <div class="dropdown">
-                    <a href="#" class="user-dropdown" data-bs-toggle="dropdown">
-                        <div class="user-avatar">
-                            @if(auth('employee')->check())
-                            {{ strtoupper(substr(auth('employee')->user()->name, 0, 2)) }}
-                            @else
-                            AD
-                            @endif
-                        </div>
-                        <div class="user-info">
-                            <div class="user-name">
-                                @if(auth('employee')->check())
-                                {{ auth('employee')->user()->name }}
-                                @else
-                                Admin User
-                                @endif
-                            </div>
-                            <div class="user-role">
-                                @if(auth('employee')->check() && auth('employee')->user()->roles->count() > 0)
-                                {{ auth('employee')->user()->roles->pluck('name')->join(', ') }}
-                                @else
-                                Administrator
-                                @endif
-                            </div>
-                        </div>
-                        <i class="fas fa-chevron-down dropdown-chevron"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="dropdown-header">
-                            <div class="user-avatar">
-                                @if(auth('employee')->check())
-                                {{ strtoupper(substr(auth('employee')->user()->name, 0, 2)) }}
-                                @else
-                                AD
-                                @endif
-                            </div>
-                            <div class="user-name">
-                                @if(auth('employee')->check())
-                                {{ auth('employee')->user()->name }}
-                                @else
-                                Admin User
-                                @endif
-                            </div>
-                            <div class="user-email">
-                                @if(auth('employee')->check())
-                                {{ auth('employee')->user()->email }}
-                                @else
-                                admin@nexitel.com
-                                @endif
-                            </div>
-                            <div class="user-role">
-                                @if(auth('employee')->check() && auth('employee')->user()->roles->count() > 0)
-                                {{ auth('employee')->user()->roles->pluck('name')->join(', ') }}
-                                @else
-                                Administrator
-                                @endif
-                            </div>
+                        @can('manage employees')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}" 
+                               href="{{ route('employees.index') }}">
+                                <i class="fas fa-user-tie me-2"></i>Employees
+                            </a>
                         </li>
-                        <li>
-                            <hr class="dropdown-divider">
+                        @endcan
+
+                        @can('manage invoices')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" 
+                               href="{{ route('invoices.index') }}">
+                                <i class="fas fa-file-invoice me-2"></i>Invoices
+                            </a>
                         </li>
-                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                <i class="fas fa-user"></i> Profile Settings
-                            </a></li>
-                        @if(auth('employee')->check() && auth('employee')->user()->hasRole('Super Admin'))
-                        <li><a class="dropdown-item" href="{{ route('roles.index') }}">
-                                <i class="fas fa-users-cog"></i> Role Management
-                            </a></li>
-                        @endif
-                        <li><a class="dropdown-item" href="#">
-                                <i class="fas fa-cog"></i> Account Settings
-                            </a></li>
-                        <li>
-                            <hr class="dropdown-divider">
+                        @endcan
+
+                        @can('manage activations')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('activations.*') ? 'active' : '' }}" 
+                               href="{{ route('activations.index') }}">
+                                <i class="fas fa-mobile-alt me-2"></i>Activations
+                            </a>
                         </li>
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </button>
-                            </form>
+                        @endcan
+
+                        @can('manage sim orders')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('sim-orders.*') ? 'active' : '' }}" 
+                               href="{{ route('sim-orders.index') }}">
+                                <i class="fas fa-sim-card me-2"></i>SIM Orders
+                            </a>
                         </li>
+                        @endcan
+
+                        @can('manage sim stocks')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('sim-stocks.*') ? 'active' : '' }}" 
+                               href="{{ route('sim-stocks.index') }}">
+                                <i class="fas fa-warehouse me-2"></i>SIM Stock
+                            </a>
+                        </li>
+                        @endcan
+
+                        @can('view reports')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" 
+                               href="{{ route('reports.index') }}">
+                                <i class="fas fa-chart-bar me-2"></i>Reports
+                            </a>
+                        </li>
+                        @endcan
+
+                        @can('manage roles')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" 
+                               href="{{ route('roles.index') }}">
+                                <i class="fas fa-user-shield me-2"></i>Roles
+                            </a>
+                        </li>
+                        @endcan
                     </ul>
                 </div>
-            </div>
-        </div>
-    </div>
+            </nav>
 
-    <!-- Enhanced Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="{{ route('dashboard') }}" class="sidebar-brand">
-                <img src="{{ asset('images/logo.jpg') }}" alt="Nexitel Logo" class="sidebar-logo">
-                <div class="sidebar-brand-text">
-                    <h3>Nexitel POS</h3>
-                    <div class="sidebar-subtitle">Point of Sales System</div>
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="pt-3 pb-2 mb-3">
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    @yield('content')
                 </div>
-            </a>
-            <button class="sidebar-toggle" onclick="toggleSidebarCollapse()" title="Toggle Sidebar">
-                <i class="fas fa-chevron-left" id="toggle-icon"></i>
-            </button>
+            </main>
         </div>
-
-        <ul class="sidebar-nav">
-            <li><a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-tachometer-alt"></i> <span class="nav-text">Dashboard</span>
-                </a></li>
-
-            @can('manage employees')
-            <li><a href="{{ route('employees.index') }}" class="{{ request()->routeIs('employees.*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i> <span class="nav-text">Employees</span>
-                </a></li>
-            @endcan
-
-            @can('manage customers')
-            <li><a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-friends"></i> <span class="nav-text">Customers</span>
-                </a></li>
-            @endcan
-
-            @can('manage invoices')
-            <li><a href="{{ route('invoices.index') }}" class="{{ request()->routeIs('invoices.*') ? 'active' : '' }}">
-                    <i class="fas fa-file-invoice"></i> <span class="nav-text">Invoices</span>
-                </a></li>
-            @endcan
-
-            @can('manage activations')
-            <li><a href="{{ route('activations.index') }}" class="{{ request()->routeIs('activations.*') ? 'active' : '' }}">
-                    <i class="fas fa-mobile-alt"></i> <span class="nav-text">Activations</span>
-                </a></li>
-            @endcan
-
-            @can('manage orders')
-            <li><a href="{{ route('sim-orders.index') }}" class="{{ request()->routeIs('sim-orders.*') ? 'active' : '' }}">
-                    <i class="fas fa-shopping-cart"></i> <span class="nav-text">SIM Orders</span>
-                </a></li>
-            @endcan
-
-            @can('manage sim stock')
-            <li>
-                <a href="{{ route('sim-stocks.index') }}" class="{{ request()->routeIs('sim-stocks.*') ? 'active' : '' }}">
-                    <i class="fas fa-boxes"></i> <span class="nav-text">SIM Stock</span>
-                </a>
-            </li>
-            @endcan
-
-
-            @can('view reports')
-            <li><a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                    <i class="fas fa-chart-bar"></i> <span class="nav-text">Reports</span>
-                </a></li>
-            @endcan
-
-            @if(auth('employee')->check() && auth('employee')->user()->hasRole('Super Admin'))
-            <li><a href="{{ route('roles.index') }}" class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
-                    <i class="fas fa-users-cog"></i> <span class="nav-text">Role Management</span>
-                </a></li>
-            @endif
-        </ul>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        @if(session('success'))
-        <div class="main-container">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle"></i>
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        </div>
-        @endif
-
-        @if(session('error'))
-        <div class="main-container">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle"></i>
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        </div>
-        @endif
-
-        @yield('content')
     </div>
 
     <!-- Bootstrap JS -->
