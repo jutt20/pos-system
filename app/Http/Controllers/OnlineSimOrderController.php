@@ -3,65 +3,86 @@
 namespace App\Http\Controllers;
 
 use App\Models\OnlineSimOrder;
-use App\Models\Customer;
 use App\Models\DeliveryService;
-use App\Models\SimStock;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OnlineSimOrderController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:employee')->except(['publicCreate', 'publicStore', 'track']);
+    }
+
     public function index()
     {
         $orders = OnlineSimOrder::with(['customer', 'deliveryService', 'approvedBy'])
-            ->orderBy('created_at', 'desc')
+            ->latest()
             ->paginate(20);
 
         return view('online-sim-orders.index', compact('orders'));
     }
 
-    public function create()
+    public function show(OnlineSimOrder $onlineSimOrder)
     {
-        $customers = Customer::where('status', 'active')->get();
-        $deliveryServices = DeliveryService::active()->get();
-        $simTypes = SimStock::select('brand', 'sim_type')->distinct()->get();
-
-        return view('online-sim-orders.create', compact('customers', 'deliveryServices', 'simTypes'));
+        $onlineSimOrder->load(['customer', 'deliveryService', 'approvedBy']);
+        return view('online-sim-orders.show', compact('onlineSimOrder'));
     }
 
-    public function store(Request $request)
+    public function publicCreate()
+    {
+        $deliveryServices = DeliveryService::active()->get();
+        return view('online-sim-orders.create', compact('deliveryServices'));
+    }
+
+    public function publicStore(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'customer_name' => 'required|string|max:255',
+            'customer_email' => 'required|email|max:255',
+            'customer_phone' => 'required|string|max:20',
             'brand' => 'required|string|max:255',
             'sim_type' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:1|max:10',
             'delivery_option' => 'required|in:pickup,delivery',
             'delivery_service_id' => 'required_if:delivery_option,delivery|exists:delivery_services,id',
-            'delivery_address' => 'required_if:delivery_option,delivery',
-            'delivery_city' => 'required_if:delivery_option,delivery',
-            'delivery_state' => 'required_if:delivery_option,delivery',
-            'delivery_zip' => 'required_if:delivery_option,delivery',
-            'delivery_phone' => 'required_if:delivery_option,delivery',
-            'notes' => 'nullable|string',
+            'delivery_address' => 'required_if:delivery_option,delivery|string|max:500',
+            'delivery_city' => 'required_if:delivery_option,delivery|string|max:100',
+            'delivery_state' => 'required_if:delivery_option,delivery|string|max:100',
+            'delivery_zip' => 'required_if:delivery_option,delivery|string|max:20',
+            'delivery_phone' => 'required_if:delivery_option,delivery|string|max:20',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
-        $totalAmount = $request->quantity * $request->unit_price;
+        // Create or find customer
+        $customer = Customer::firstOrCreate(
+            ['email' => $request->customer_email],
+            [
+                'name' => $request->customer_name,
+                'phone' => $request->customer_phone,
+                'status' => 'active',
+            ]
+        );
+
+        // Calculate pricing
+        $unitPrice = 25.00; // Base SIM price
+        $totalAmount = $unitPrice * $request->quantity;
         $deliveryCost = 0;
 
-        if ($request->delivery_option === 'delivery' && $request->delivery_service_id) {
+        if ($request->delivery_option === 'delivery') {
             $deliveryService = DeliveryService::find($request->delivery_service_id);
             $deliveryCost = $deliveryService->calculateCost($request->quantity);
+            $totalAmount += $deliveryCost;
         }
 
         $order = OnlineSimOrder::create([
-            'customer_id' => $request->customer_id,
+            'customer_id' => $customer->id,
             'brand' => $request->brand,
             'sim_type' => $request->sim_type,
             'quantity' => $request->quantity,
-            'unit_price' => $request->unit_price,
-            'total_amount' => $totalAmount + $deliveryCost,
+            'unit_price' => $unitPrice,
+            'total_amount' => $totalAmount,
             'delivery_option' => $request->delivery_option,
             'delivery_service_id' => $request->delivery_service_id,
             'delivery_cost' => $deliveryCost,
@@ -74,14 +95,17 @@ class OnlineSimOrderController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('online-sim-orders.show', $order)
-            ->with('success', 'Online SIM order created successfully.');
+        return redirect()->route('online-sim-orders.track', $order->order_number)
+            ->with('success', 'Your order has been submitted successfully! Please save your order number: ' . $order->order_number);
     }
 
-    public function show(OnlineSimOrder $onlineSimOrder)
+    public function track($orderNumber)
     {
-        $onlineSimOrder->load(['customer', 'deliveryService', 'approvedBy']);
-        return view('online-sim-orders.show', compact('onlineSimOrder'));
+        $order = OnlineSimOrder::where('order_number', $orderNumber)
+            ->with(['customer', 'deliveryService'])
+            ->firstOrFail();
+
+        return view('online-sim-orders.track', compact('order'));
     }
 
     public function approve(OnlineSimOrder $onlineSimOrder)
@@ -99,108 +123,23 @@ class OnlineSimOrderController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,approved,processing,shipped,delivered,cancelled',
-            'tracking_number' => 'nullable|string',
-            'admin_notes' => 'nullable|string',
+            'tracking_number' => 'nullable|string|max:255',
+            'admin_notes' => 'nullable|string|max:1000',
         ]);
 
-        $updateData = [
+        $onlineSimOrder->update([
             'status' => $request->status,
+            'tracking_number' => $request->tracking_number,
             'admin_notes' => $request->admin_notes,
-        ];
-
-        if ($request->tracking_number) {
-            $updateData['tracking_number'] = $request->tracking_number;
-        }
-
-        if ($request->status === 'shipped' && $onlineSimOrder->deliveryService) {
-            $updateData['estimated_delivery'] = now()->addDays($onlineSimOrder->deliveryService->estimated_days);
-        }
-
-        $onlineSimOrder->update($updateData);
+        ]);
 
         return redirect()->back()->with('success', 'Order status updated successfully.');
     }
 
-    public function track($orderNumber)
+    public function destroy(OnlineSimOrder $onlineSimOrder)
     {
-        $order = OnlineSimOrder::where('order_number', $orderNumber)
-            ->with(['customer', 'deliveryService'])
-            ->firstOrFail();
-
-        return view('online-sim-orders.track', compact('order'));
-    }
-
-    public function publicCreate()
-    {
-        $deliveryServices = DeliveryService::active()->get();
-        $simTypes = SimStock::select('brand', 'sim_type', 'unit_price')->distinct()->get();
-
-        return view('online-sim-orders.public-create', compact('deliveryServices', 'simTypes'));
-    }
-
-    public function publicStore(Request $request)
-    {
-        $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'required|string|max:20',
-            'brand' => 'required|string|max:255',
-            'sim_type' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1|max:10',
-            'delivery_option' => 'required|in:pickup,delivery',
-            'delivery_service_id' => 'required_if:delivery_option,delivery|exists:delivery_services,id',
-            'delivery_address' => 'required_if:delivery_option,delivery',
-            'delivery_city' => 'required_if:delivery_option,delivery',
-            'delivery_state' => 'required_if:delivery_option,delivery',
-            'delivery_zip' => 'required_if:delivery_option,delivery',
-            'delivery_phone' => 'required_if:delivery_option,delivery',
-            'notes' => 'nullable|string|max:500',
-        ]);
-
-        // Find or create customer
-        $customer = Customer::firstOrCreate(
-            ['email' => $request->customer_email],
-            [
-                'name' => $request->customer_name,
-                'phone' => $request->customer_phone,
-                'status' => 'active',
-            ]
-        );
-
-        // Get SIM price
-        $simStock = SimStock::where('brand', $request->brand)
-            ->where('sim_type', $request->sim_type)
-            ->first();
-
-        $unitPrice = $simStock ? $simStock->unit_price : 25.00; // Default price
-        $totalAmount = $request->quantity * $unitPrice;
-        $deliveryCost = 0;
-
-        if ($request->delivery_option === 'delivery' && $request->delivery_service_id) {
-            $deliveryService = DeliveryService::find($request->delivery_service_id);
-            $deliveryCost = $deliveryService->calculateCost($request->quantity);
-        }
-
-        $order = OnlineSimOrder::create([
-            'customer_id' => $customer->id,
-            'brand' => $request->brand,
-            'sim_type' => $request->sim_type,
-            'quantity' => $request->quantity,
-            'unit_price' => $unitPrice,
-            'total_amount' => $totalAmount + $deliveryCost,
-            'delivery_option' => $request->delivery_option,
-            'delivery_service_id' => $request->delivery_service_id,
-            'delivery_cost' => $deliveryCost,
-            'delivery_address' => $request->delivery_address,
-            'delivery_city' => $request->delivery_city,
-            'delivery_state' => $request->delivery_state,
-            'delivery_zip' => $request->delivery_zip,
-            'delivery_phone' => $request->delivery_phone ?: $request->customer_phone,
-            'notes' => $request->notes,
-            'status' => 'pending',
-        ]);
-
-        return redirect()->route('online-sim-orders.track', $order->order_number)
-            ->with('success', 'Your order has been placed successfully! Please save your order number: ' . $order->order_number);
+        $onlineSimOrder->delete();
+        return redirect()->route('online-sim-orders.index')
+            ->with('success', 'Order deleted successfully.');
     }
 }

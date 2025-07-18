@@ -3,53 +3,46 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 
 class CustomerLoginController extends Controller
 {
-    /**
-     * Display the customer login view.
-     */
-    public function create(): View
+    public function create()
     {
         return view('auth.customer-login');
     }
 
-    /**
-     * Handle an incoming customer authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
+    public function login(Request $request)
     {
-        $request->authenticate();
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-        $request->session()->regenerate();
+        // Try to authenticate with email or username
+        $loginField = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        
+        $credentials = [
+            $loginField => $request->username,
+            'password' => $request->password,
+        ];
 
-        // Check if user has customer role or permissions
-        $user = Auth::user();
-        if (!$user->hasRole('Customer') && !$user->can('access customer portal')) {
-            Auth::logout();
-            return back()->withErrors([
-                'email' => 'You do not have permission to access the customer portal.',
-            ]);
+        if (Auth::guard('customer')->attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('customer.dashboard'));
         }
 
-        return redirect()->intended(route('customer-portal.dashboard'));
+        throw ValidationException::withMessages([
+            'username' => 'The provided credentials do not match our records.',
+        ]);
     }
 
-    /**
-     * Destroy an authenticated customer session.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
-
+        Auth::guard('customer')->logout();
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect()->route('customer.login');

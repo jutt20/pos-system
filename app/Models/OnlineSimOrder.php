@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OnlineSimOrder extends Model
 {
@@ -42,38 +43,37 @@ class OnlineSimOrder extends Model
         'delivery_cost' => 'decimal:2',
     ];
 
-    public function customer()
+    public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }
 
-    public function deliveryService()
+    public function deliveryService(): BelongsTo
     {
         return $this->belongsTo(DeliveryService::class);
     }
 
-    public function approvedBy()
+    public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approved_by');
     }
 
-    public function getStatusBadgeAttribute()
+    public function getStatusBadgeClass(): string
     {
-        $badges = [
+        return match($this->status) {
             'pending' => 'bg-warning',
             'approved' => 'bg-info',
             'processing' => 'bg-primary',
             'shipped' => 'bg-success',
-            'delivered' => 'bg-success',
+            'delivered' => 'bg-dark',
             'cancelled' => 'bg-danger',
-        ];
-
-        return $badges[$this->status] ?? 'bg-secondary';
+            default => 'bg-secondary'
+        };
     }
 
-    public function getTrackingUrlAttribute()
+    public function getTrackingUrl(): ?string
     {
-        if (!$this->tracking_number || !$this->deliveryService) {
+        if (!$this->tracking_number || !$this->deliveryService?->tracking_url) {
             return null;
         }
 
@@ -85,7 +85,9 @@ class OnlineSimOrder extends Model
         parent::boot();
 
         static::creating(function ($order) {
-            $order->order_number = 'OSO-' . date('Y') . '-' . str_pad(static::count() + 1, 6, '0', STR_PAD_LEFT);
+            if (!$order->order_number) {
+                $order->order_number = 'OSO-' . strtoupper(uniqid());
+            }
         });
     }
 }

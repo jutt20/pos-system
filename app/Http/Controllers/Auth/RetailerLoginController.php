@@ -3,53 +3,54 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 
 class RetailerLoginController extends Controller
 {
-    /**
-     * Display the retailer login view.
-     */
-    public function create(): View
+    public function create()
     {
         return view('auth.retailer-login');
     }
 
-    /**
-     * Handle an incoming retailer authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
+    public function login(Request $request)
     {
-        $request->authenticate();
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-        $request->session()->regenerate();
+        $credentials = [
+            'username' => $request->username,
+            'password' => $request->password,
+        ];
 
-        // Check if user has retailer role or permissions
-        $user = Auth::user();
-        if (!$user->hasRole('Retailer') && !$user->can('access retailer portal')) {
-            Auth::logout();
-            return back()->withErrors([
-                'email' => 'You do not have permission to access the retailer portal.',
-            ]);
+        if (Auth::guard('employee')->attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            $user = Auth::guard('employee')->user();
+            
+            // Check if user has retailer role
+            if (!$user->hasRole('Retailer')) {
+                Auth::guard('employee')->logout();
+                throw ValidationException::withMessages([
+                    'username' => 'You do not have retailer access.',
+                ]);
+            }
+
+            return redirect()->intended(route('retailer.dashboard'));
         }
 
-        return redirect()->intended(route('retailer.dashboard'));
+        throw ValidationException::withMessages([
+            'username' => 'The provided credentials do not match our records.',
+        ]);
     }
 
-    /**
-     * Destroy an authenticated retailer session.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
-
+        Auth::guard('employee')->logout();
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect()->route('retailer.login');

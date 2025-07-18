@@ -19,9 +19,7 @@ use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\RetailerLoginController;
 use App\Http\Controllers\Auth\CustomerLoginController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,9 +27,10 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 */
 
+// Welcome Page
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 // Public Online SIM Order Routes
 Route::get('/order-sim', [OnlineSimOrderController::class, 'publicCreate'])->name('sim-order.create');
@@ -43,17 +42,15 @@ Route::get('/staff-login', function () {
     return view('auth.login');
 })->name('staff.login');
 
-Route::get('/retailer-login', function () {
-    return view('auth.retailer-login');
-})->name('retailer.login');
-
+// Retailer Authentication
+Route::get('/retailer-login', [RetailerLoginController::class, 'create'])->name('retailer.login');
 Route::post('/retailer-login', [RetailerLoginController::class, 'login']);
+Route::post('/retailer-logout', [RetailerLoginController::class, 'destroy'])->name('retailer.logout');
 
-Route::get('/customer-login', function () {
-    return view('auth.customer-login');
-})->name('customer.login');
-
+// Customer Authentication
+Route::get('/customer-login', [CustomerLoginController::class, 'create'])->name('customer.login');
 Route::post('/customer-login', [CustomerLoginController::class, 'login']);
+Route::post('/customer-logout', [CustomerLoginController::class, 'destroy'])->name('customer.logout');
 
 // Staff Dashboard Routes (Protected)
 Route::middleware(['auth:employee'])->group(function () {
@@ -100,9 +97,10 @@ Route::middleware(['auth:employee'])->group(function () {
     
     // SIM Stock Management
     Route::resource('sim-stocks', SimStockController::class);
-    Route::get('/sim-stocks/import/form', [SimStockImportController::class, 'showImportForm'])->name('sim-stocks.import.form');
-    Route::post('/sim-stocks/import', [SimStockImportController::class, 'import'])->name('sim-stocks.import');
-    Route::get('/sim-stocks/export', [SimStockExportController::class, 'export'])->name('sim-stocks.export');
+    Route::patch('sim-stocks/{simStock}/activate', [SimStockController::class, 'activate'])->name('sim-stocks.activate');
+    Route::post('sim-stocks/bulk-update', [SimStockController::class, 'bulkUpdate'])->name('sim-stocks.bulk-update');
+    Route::get('sim-stocks-export', [SimStockController::class, 'export'])->name('sim-stocks.export');
+    Route::post('sim-stocks-import', [SimStockController::class, 'import'])->name('sim-stocks.import');
     
     // Chat System
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');

@@ -16,20 +16,19 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
             padding: 20px;
         }
 
         .login-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
             padding: 0;
             overflow: hidden;
             max-width: 900px;
@@ -39,87 +38,15 @@
         }
 
         .login-left {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
             color: white;
-            padding: 60px 40px;
+            padding: 60px 50px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-left::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="50" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="30" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-
-        .logo-container {
-            position: relative;
-            z-index: 2;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            object-fit: contain;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 12px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .welcome-text {
-            position: relative;
-            z-index: 2;
-        }
-
-        .welcome-text h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .welcome-text p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .features-list {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-        }
-
-        .features-list li {
-            padding: 8px 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .features-list i {
-            color: #ffd700;
-            font-size: 1.1rem;
         }
 
         .login-right {
@@ -128,176 +55,47 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-        }
-
-        .login-form {
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .form-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .form-title h3 {
-            color: #333;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .form-title p {
-            color: #666;
-            font-size: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 0.95rem;
+            background: white;
         }
 
         .form-control {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            padding: 18px 25px;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
-            background: #f8f9fa;
         }
 
         .form-control:focus {
-            outline: none;
-            border-color: #10b981;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-
-        .input-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            margin-top: 12px;
+            border-color: #6f42c1;
+            box-shadow: 0 0 0 4px rgba(111, 66, 193, 0.1);
         }
 
         .btn-login {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            border-radius: 16px;
+            padding: 18px;
+            font-size: 1.2rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(111, 66, 193, 0.4);
         }
 
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .form-links {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .form-links a {
-            color: #10b981;
+        .portal-links a {
+            color: #6f42c1;
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
+            font-weight: 600;
         }
 
-        .form-links a:hover {
-            color: #059669;
-        }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: none;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            color: #991b1b;
-            border-left: 4px solid #dc2626;
-        }
-
-        .portal-links {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e1e5e9;
-        }
-
-        .portal-links p {
-            color: #666;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-        }
-
-        .portal-link {
-            display: inline-block;
-            margin: 0 10px;
-            padding: 8px 16px;
-            background: #f8f9fa;
-            color: #10b981;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .portal-link:hover {
-            background: #10b981;
-            color: white;
-            text-decoration: none;
-        }
-
-        @media (max-width: 768px) {
-            .login-container {
-                flex-direction: column;
-                margin: 10px;
-                min-height: auto;
-            }
-
-            .login-left {
-                padding: 40px 30px;
-                min-height: 300px;
-            }
-
-            .login-right {
-                padding: 40px 30px;
-            }
-
-            .welcome-text h2 {
-                font-size: 2rem;
-            }
-
-            .features-list {
-                text-align: center;
-            }
+        .portal-links a:hover {
+            color: #e83e8c;
         }
     </style>
 </head>
@@ -305,19 +103,18 @@
 <body>
     <div class="login-container">
         <div class="login-left">
-            <div class="logo-container">
-                <img src="{{ asset('images/logo.jpg') }}" alt="Nexitel Logo" class="logo">
+            <div class="logo-container mb-4">
+                <img src="{{ asset('images/logo.jpg') }}" alt="Nexitel Logo" class="logo" style="width: 90px; height: 90px; border-radius: 22px;">
             </div>
             <div class="welcome-text">
                 <h2>Customer Portal</h2>
-                <p>Access your account and manage your services with our easy-to-use customer portal.</p>
-                <ul class="features-list">
-                    <li><i class="fas fa-mobile-alt"></i> View Activations</li>
-                    <li><i class="fas fa-shopping-cart"></i> Track Orders</li>
-                    <li><i class="fas fa-file-invoice"></i> View Invoices</li>
-                    <li><i class="fas fa-headset"></i> Customer Support</li>
-                    <li><i class="fas fa-user-cog"></i> Account Settings</li>
-                </ul>
+                <p>Access your customer dashboard and manage your account, orders, and invoices with ease.</p>
+                <div class="features-grid mt-4">
+                    <div class="feature-item">
+                        <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                        <p>Order Management</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -325,8 +122,8 @@
             <form method="POST" action="{{ route('customer.login') }}" class="login-form">
                 @csrf
                 
-                <div class="form-title">
-                    <h3>Welcome Back</h3>
+                <div class="form-title text-center mb-5">
+                    <h3>Customer Login</h3>
                     <p>Sign in to your customer account</p>
                 </div>
 
@@ -337,46 +134,34 @@
                     </div>
                 @endif
 
-                <div class="form-group">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
-                    <i class="fas fa-envelope input-icon"></i>
+                <div class="form-group mb-4">
+                    <label for="username" class="form-label">Email or Username</label>
+                    <input id="username" type="text" class="form-control" name="username" value="{{ old('username') }}" required autofocus>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-4">
                     <label for="password" class="form-label">Password</label>
-                    <input id="password" type="password" class="form-control" name="password" required autocomplete="current-password">
-                    <i class="fas fa-lock input-icon"></i>
+                    <input id="password" type="password" class="form-control" name="password" required>
                 </div>
 
-                <div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember_me">
-                        <label class="form-check-label" for="remember_me">
-                            Remember me
-                        </label>
-                    </div>
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" name="remember" id="remember_me">
+                    <label class="form-check-label" for="remember_me">
+                        Remember me for 30 days
+                    </label>
                 </div>
 
-                <button type="submit" class="btn-login">
+                <button type="submit" class="btn btn-login">
                     <i class="fas fa-sign-in-alt me-2"></i>
                     Sign In to Customer Portal
                 </button>
 
-                <div class="form-links">
-                    @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}">
-                            Forgot your password?
-                        </a>
-                    @endif
-                </div>
-
-                <div class="portal-links">
+                <div class="portal-links text-center mt-4">
                     <p>Access other portals:</p>
-                    <a href="{{ route('login') }}" class="portal-link">
-                        <i class="fas fa-user-tie"></i> Staff Portal
+                    <a href="{{ route('staff.login') }}" class="me-3">
+                        <i class="fas fa-users"></i> Staff Portal
                     </a>
-                    <a href="{{ route('retailer.login') }}" class="portal-link">
+                    <a href="{{ route('retailer.login') }}">
                         <i class="fas fa-store"></i> Retailer Portal
                     </a>
                 </div>
@@ -384,7 +169,6 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('total_amount', 10, 2);
-            $table->enum('delivery_option', ['pickup', 'delivery']);
+            $table->enum('delivery_option', ['pickup', 'delivery'])->default('delivery');
             $table->foreignId('delivery_service_id')->nullable()->constrained()->onDelete('set null');
             $table->decimal('delivery_cost', 10, 2)->default(0);
             $table->text('delivery_address')->nullable();
@@ -33,6 +33,10 @@ return new class extends Migration
             $table->foreignId('approved_by')->nullable()->constrained('employees')->onDelete('set null');
             $table->datetime('approved_at')->nullable();
             $table->timestamps();
+            
+            $table->index(['customer_id', 'status']);
+            $table->index(['status', 'created_at']);
+            $table->index('tracking_number');
         });
     }
 

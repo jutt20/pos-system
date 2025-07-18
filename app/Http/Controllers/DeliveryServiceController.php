@@ -15,7 +15,7 @@ class DeliveryServiceController extends Controller
 
     public function index()
     {
-        $deliveryServices = DeliveryService::orderBy('name')->get();
+        $deliveryServices = DeliveryService::latest()->paginate(20);
         return view('delivery-services.index', compact('deliveryServices'));
     }
 
@@ -28,12 +28,12 @@ class DeliveryServiceController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:delivery_services',
+            'code' => 'required|string|max:50|unique:delivery_services,code',
             'base_cost' => 'required|numeric|min:0',
             'per_item_cost' => 'required|numeric|min:0',
-            'estimated_days' => 'required|integer|min:1',
-            'tracking_url' => 'nullable|url',
-            'description' => 'nullable|string',
+            'estimated_days' => 'required|integer|min:1|max:30',
+            'tracking_url' => 'nullable|url|max:500',
+            'description' => 'nullable|string|max:1000',
         ]);
 
         DeliveryService::create($request->all());
@@ -44,7 +44,6 @@ class DeliveryServiceController extends Controller
 
     public function show(DeliveryService $deliveryService)
     {
-        $deliveryService->load('onlineSimOrders');
         return view('delivery-services.show', compact('deliveryService'));
     }
 
@@ -60,10 +59,9 @@ class DeliveryServiceController extends Controller
             'code' => 'required|string|max:50|unique:delivery_services,code,' . $deliveryService->id,
             'base_cost' => 'required|numeric|min:0',
             'per_item_cost' => 'required|numeric|min:0',
-            'estimated_days' => 'required|integer|min:1',
-            'tracking_url' => 'nullable|url',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
+            'estimated_days' => 'required|integer|min:1|max:30',
+            'tracking_url' => 'nullable|url|max:500',
+            'description' => 'nullable|string|max:1000',
         ]);
 
         $deliveryService->update($request->all());
@@ -75,14 +73,15 @@ class DeliveryServiceController extends Controller
     public function destroy(DeliveryService $deliveryService)
     {
         $deliveryService->delete();
-
         return redirect()->route('delivery-services.index')
             ->with('success', 'Delivery service deleted successfully.');
     }
 
     public function toggle(DeliveryService $deliveryService)
     {
-        $deliveryService->update(['is_active' => !$deliveryService->is_active]);
+        $deliveryService->update([
+            'is_active' => !$deliveryService->is_active
+        ]);
 
         $status = $deliveryService->is_active ? 'activated' : 'deactivated';
         return redirect()->back()->with('success', "Delivery service {$status} successfully.");

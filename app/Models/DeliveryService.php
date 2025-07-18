@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DeliveryService extends Model
 {
@@ -26,12 +27,12 @@ class DeliveryService extends Model
         'is_active' => 'boolean',
     ];
 
-    public function onlineSimOrders()
+    public function onlineSimOrders(): HasMany
     {
         return $this->hasMany(OnlineSimOrder::class);
     }
 
-    public function calculateCost($quantity = 1)
+    public function calculateCost(int $quantity = 1): float
     {
         return $this->base_cost + ($this->per_item_cost * $quantity);
     }
