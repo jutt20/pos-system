@@ -599,6 +599,8 @@
             outline: none;
         }
 
+        .text-orange { color: #E65100; }
+
         /* Live Chat */
         .chat-widget {
             position: fixed;

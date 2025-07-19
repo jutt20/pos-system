@@ -65,32 +65,38 @@
 
 <!-- Services Grid -->
 <div class="services-grid">
-    <div class="service-card">
-        <div class="service-icon purple">
-            <i class="fas fa-mobile-alt"></i>
+    <a href="{{ route('retailer.nexitel.services') }}" class="text-decoration-none text-dark">
+        <div class="service-card">
+            <div class="service-icon purple">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <div class="service-title">Nexitel Services</div>
+            <div class="service-description">Complete wireless service management</div>
+            <div class="service-status available">8 Services Available</div>
         </div>
-        <div class="service-title">Nexitel Services</div>
-        <div class="service-description">Complete wireless service management</div>
-        <div class="service-status available">6 Services Available</div>
-    </div>
+    </a>
     
-    <div class="service-card">
-        <div class="service-icon orange">
-            <i class="fas fa-phone"></i>
+    <a href="{{ route('retailer.voip.menu') }}" class="text-decoration-none text-dark">
+        <div class="service-card">
+            <div class="service-icon orange">
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="service-title">VoIP Services</div>
+            <div class="service-description">Business phone systems</div>
+            <div class="service-status orders">Activation & Bulk Orders</div>
         </div>
-        <div class="service-title">VoIP Services</div>
-        <div class="service-description">Business phone systems</div>
-        <div class="service-status orders">Activation & Bulk Orders</div>
-    </div>
+    </a>
     
-    <div class="service-card">
-        <div class="service-icon green">
-            <i class="fas fa-globe"></i>
+    <a href="{{ route('retailer.global.menu') }}" class="text-decoration-none text-dark">
+        <div class="service-card">
+            <div class="service-icon green">
+                <i class="fas fa-globe"></i>
+            </div>
+            <div class="service-title">Global Recharge</div>
+            <div class="service-description">International mobile phone top-up</div>
+            <div class="service-status available">2 Services Available</div>
         </div>
-        <div class="service-title">Global Recharge</div>
-        <div class="service-description">International mobile phone top-up</div>
-        <div class="service-status available">2 Services Available</div>
-    </div>
+    </a>
 </div>
 
 <!-- Recent Activity -->

@@ -8,7 +8,7 @@
             <div class="welcome-section">
                 <div class="welcome-content">
                     <div class="d-flex align-items-center mb-3">
-                        <img src="{{ asset('images/logo.jpg') }}" alt="Nexitel Logo" class="welcome-logo me-3">
+                        <img src="{{ asset('images/logo-short.jpg') }}" alt="Nexitel Logo" class="welcome-logo me-3">
                         <div>
                             <h1 class="welcome-title mb-1">Welcome back, {{ Auth::user()->name }}!</h1>
                             <p class="welcome-subtitle mb-0">Here's what's happening with your business today.</p>
