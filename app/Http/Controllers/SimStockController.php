@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\SimStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Imports\SimStockImport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SimStocksExport;
 
 class SimStockController extends Controller
 {
@@ -20,10 +23,10 @@ class SimStockController extends Controller
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('sim_number', 'like', "%{$search}%")
-                  ->orWhere('iccid', 'like', "%{$search}%")
-                  ->orWhere('batch_id', 'like', "%{$search}%");
+                    ->orWhere('iccid', 'like', "%{$search}%")
+                    ->orWhere('batch_id', 'like', "%{$search}%");
             });
         }
 
@@ -171,7 +174,7 @@ class SimStockController extends Controller
         ];
 
         $updateData = ['status' => $statusMap[$request->action]];
-        
+
         if ($request->action === 'activate') {
             $updateData['activated_at'] = now();
             $updateData['activated_by'] = Auth::id();
@@ -181,22 +184,31 @@ class SimStockController extends Controller
 
         $count = count($request->sim_ids);
         $action = str_replace('_', ' ', $request->action);
-        
+
         return redirect()->route('sim-stocks.index')
             ->with('success', "{$count} SIM card(s) {$action}d successfully.");
     }
 
     public function export()
     {
-        // Implementation for export functionality
-        return redirect()->route('sim-stocks.index')
-            ->with('success', 'Export functionality will be implemented.');
+        $filename = 'sim_stocks_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        return Excel::download(new SimStocksExport, $filename);
     }
 
     public function import(Request $request)
     {
-        // Implementation for import functionality
+        $request->validate([
+            'import_file' => 'required|file|mimes:xlsx,csv,xls'
+        ]);
+
+        try {
+            Excel::import(new SimStockImport, $request->file('import_file'));
+        } catch (\Exception $e) {
+            return redirect()->route('sim-stocks.index')
+                ->with('error', 'Import failed: ' . $e->getMessage());
+        }
+
         return redirect()->route('sim-stocks.index')
-            ->with('success', 'Import functionality will be implemented.');
+            ->with('success', 'SIM Stock imported successfully.');
     }
 }

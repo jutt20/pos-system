@@ -69,11 +69,11 @@ Route::middleware('auth:employee')->group(function () {
 
     // SIM Stock
     Route::middleware(['permission:manage sim stocks'])->group(function () {
-        Route::resource('sim-stocks', SimStockController::class);
         Route::post('sim-stocks/import', [SimStockController::class, 'import'])->name('sim-stocks.import');
         Route::get('sim-stocks/export', [SimStockController::class, 'export'])->name('sim-stocks.export');
         Route::post('sim-stocks/activate', [SimStockController::class, 'activate'])->name('sim-stocks.activate');
         Route::post('sim-stocks/bulk-update', [SimStockController::class, 'bulkUpdate'])->name('sim-stocks.bulk-update');
+        Route::resource('sim-stocks', SimStockController::class);
     });
 
     // Reports
@@ -86,6 +86,7 @@ Route::middleware('auth:employee')->group(function () {
     // Roles (Super Admin only)
     Route::resource('roles', RoleController::class);
 });
+
 
 // Retailer Authentication Routes
 Route::prefix('retailer')->name('retailer.')->group(function () {

@@ -1,9 +1,9 @@
 @extends('layouts.retailer')
 
-@section('title', 'Nextel Recharge')
+@section('title', 'Nexitel Recharge')
 
-@section('page-title', 'Nextel Recharge')
-@section('page-subtitle', 'Top up your Nextel phone instantly')
+@section('page-title', 'Nexitel Recharge')
+@section('page-subtitle', 'Top up your Nexitel phone instantly')
 
 @section('content')
 <div class="mb-4">
@@ -25,11 +25,11 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Nextel Network</label>
+                    <label class="form-label">Nexitel Network</label>
                     <select class="form-select">
-                        <option selected>Select your Nextel network...</option>
-                        <option>Nextel Purple</option>
-                        <option>Nextel Blue</option>
+                        <option selected>Select your Nexitel network...</option>
+                        <option>Nexitel Purple</option>
+                        <option>Nexitel Blue</option>
                     </select>
                 </div>
 
@@ -70,7 +70,7 @@
         </div>
 
         <div class="content-section mt-4">
-            <h5>Why Choose Nextel?</h5>
+            <h5>Why Choose Nexitel?</h5>
             <ul class="list-unstyled mt-3">
                 <li class="mb-2"><i class="fas fa-bolt text-success me-2"></i> Instant Top-up</li>
                 <li class="mb-2"><i class="fas fa-clock text-success me-2"></i> 24/7 Availability</li>

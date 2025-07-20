@@ -230,11 +230,14 @@
                         <td>
                             <input type="checkbox" name="sim_ids[]" value="{{ $sim->id }}" class="form-check-input sim-checkbox">
                         </td>
-                        <td>{{ $sim->id }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>
-                            <div class="d-flex align-items-center">
-                                <div class="rounded-circle me-2" style="width: 15px; height: 15px; background-color: {{ $sim->color_code }};"></div>
-                                <span class="small">{{ $sim->category_info['name'] ?? 'Unknown' }}</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="width: 10px; height: 10px; border-radius: 50%; background-color: {{ $sim->color_code }}; flex-shrink: 0;"></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">{{ $sim->category_info['name'] ?? 'Unknown' }}</span>
+                                    <span class="small text-muted">{{ ucfirst($sim->sim_type ?? 'Physical SIM') }}</span>
+                                </div>
                             </div>
                         </td>
                         <td>{{ $sim->sim_number ?: 'N/A' }}</td>

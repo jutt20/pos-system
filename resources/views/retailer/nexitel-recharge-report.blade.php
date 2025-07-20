@@ -24,10 +24,10 @@
 
         @php
             $records = [
-                ['id' => 'RCH-2025-001', 'date' => '2025-01-12 14:30', 'phone' => '+1 (555) 123-4567', 'txn' => 'TXN-123456789', 'network' => 'Nextel Purple', 'networkClass' => 'purple', 'amount' => '$50', 'amountClass' => 'text-success', 'status' => 'Completed', 'statusClass' => 'success'],
-                ['id' => 'RCH-2025-002', 'date' => '2025-01-12 15:45', 'phone' => '+1 (555) 987-6543', 'txn' => 'TXN-123456790', 'network' => 'Nextel Blue', 'networkClass' => 'info', 'amount' => '$25', 'amountClass' => 'text-primary', 'status' => 'Pending', 'statusClass' => 'warning text-dark'],
-                ['id' => 'RCH-2025-003', 'date' => '2025-01-12 10:15', 'phone' => '+1 (555) 456-7890', 'txn' => 'TXN-123456791', 'network' => 'Nextel Purple', 'networkClass' => 'purple', 'amount' => '$100', 'amountClass' => 'text-danger', 'status' => 'Failed', 'statusClass' => 'danger'],
-                ['id' => 'RCH-2025-004', 'date' => '2025-01-11 16:20', 'phone' => '+1 (555) 321-0987', 'txn' => 'TXN-123456792', 'network' => 'Nextel Blue', 'networkClass' => 'info', 'amount' => '$75', 'amountClass' => 'text-success', 'status' => 'Completed', 'statusClass' => 'success'],
+                ['id' => 'RCH-2025-001', 'date' => '2025-01-12 14:30', 'phone' => '+1 (555) 123-4567', 'txn' => 'TXN-123456789', 'network' => 'Nexitel Purple', 'networkClass' => 'purple', 'amount' => '$50', 'amountClass' => 'text-success', 'status' => 'Completed', 'statusClass' => 'success'],
+                ['id' => 'RCH-2025-002', 'date' => '2025-01-12 15:45', 'phone' => '+1 (555) 987-6543', 'txn' => 'TXN-123456790', 'network' => 'Nexitel Blue', 'networkClass' => 'info', 'amount' => '$25', 'amountClass' => 'text-primary', 'status' => 'Pending', 'statusClass' => 'warning text-dark'],
+                ['id' => 'RCH-2025-003', 'date' => '2025-01-12 10:15', 'phone' => '+1 (555) 456-7890', 'txn' => 'TXN-123456791', 'network' => 'Nexitel Purple', 'networkClass' => 'purple', 'amount' => '$100', 'amountClass' => 'text-danger', 'status' => 'Failed', 'statusClass' => 'danger'],
+                ['id' => 'RCH-2025-004', 'date' => '2025-01-11 16:20', 'phone' => '+1 (555) 321-0987', 'txn' => 'TXN-123456792', 'network' => 'Nexitel Blue', 'networkClass' => 'info', 'amount' => '$75', 'amountClass' => 'text-success', 'status' => 'Completed', 'statusClass' => 'success'],
             ];
         @endphp
 
