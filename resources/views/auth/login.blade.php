@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Staff Login - POS System</title>
+    <title>Admin Login - Nexitel POS</title>
     
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -21,8 +21,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -50,29 +50,22 @@
             75% { transform: translateX(-5px) translateY(10px); }
         }
 
-        .login-container {
+        .login-card {
+            width: 400px;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
         }
 
-        .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
+        .logo-container {
             text-align: center;
+            margin-bottom: 2rem;
         }
 
-        .login-header h2 {
-            margin: 0;
-            font-weight: 300;
-        }
-
-        .login-body {
-            padding: 2rem;
+        .logo-container img {
+            max-width: 180px;
+            height: auto;
         }
 
         .form-group {
@@ -89,9 +82,9 @@
         }
 
         .form-control {
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
             font-size: 16px;
             transition: all 0.3s;
         }
@@ -101,25 +94,24 @@
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
 
-        .btn-login {
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 12px;
-            font-size: 16px;
             font-weight: 600;
-            color: white;
             width: 100%;
+            margin-top: 1rem;
             transition: all 0.3s;
         }
 
-        .btn-login:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
             color: white;
         }
 
-        .btn-login:active {
+        .btn-primary:active {
             transform: translateY(-1px);
         }
 
@@ -182,39 +174,20 @@
         }
 
         .portal-links {
-            text-align: center;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
-        .portal-links p {
-            color: #718096;
-            margin-bottom: 1rem;
+        .portal-links a {
+            color: #6c757d;
+            text-decoration: none;
             font-size: 0.9rem;
-            font-weight: 500;
         }
 
-        .portal-link {
-            display: inline-block;
-            margin: 0 0.5rem 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #f8f9fa, #e2e8f0);
-            color: #4a5568;
-            text-decoration: none;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .portal-link:hover {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            text-decoration: none;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        .portal-links a:hover {
+            color: #764ba2;
         }
 
         .alert {
@@ -242,23 +215,25 @@
             border-left: 0.25rem solid #dc2626;
         }
 
+        .alert-success {
+            background: linear-gradient(135deg, #d1e7dd, #bef5ca);
+            color: #155724;
+            border-left: 0.25rem solid #155724;
+        }
+
         @media (max-width: 768px) {
-            .login-container {
+            .login-card {
                 flex-direction: column;
                 margin: 10px;
                 min-height: auto;
                 max-width: 500px;
             }
 
-            .login-header {
-                padding: 1.5rem;
+            .logo-container {
+                margin-bottom: 1.5rem;
             }
 
-            .login-body {
-                padding: 1.5rem;
-            }
-
-            .portal-link {
+            .portal-links {
                 display: block;
                 margin: 0.5rem 0;
             }
@@ -293,7 +268,7 @@
 
         .input-group-text {
             background: #f8f9fa;
-            border: 2px solid #e9ecef;
+            border: 1px solid #e9ecef;
             border-right: none;
         }
 
@@ -308,77 +283,95 @@
         <div class="spinner"></div>
     </div>
 
-    <div class="login-container">
-        <div class="login-header">
-            <i class="fas fa-user-tie fa-3x mb-3"></i>
-            <h2>Staff Login</h2>
-            <p class="mb-0">Access your dashboard</p>
+    <div class="login-card">
+        <div class="logo-container">
+            <img src="{{ asset('images/logo.jpg') }}" alt="Nexitel Logo">
         </div>
         
-        <div class="login-body">
-            <form method="POST" action="{{ route('login') }}" class="login-form" id="loginForm">
-                @csrf
-                
-                <div class="mb-3">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-user"></i>
-                        </span>
-                        <input type="text" 
-                               class="form-control with-icon @error('username') is-invalid @enderror" 
-                               name="username" 
-                               value="{{ old('username') }}" 
-                               placeholder="Username" 
-                               required 
-                               autofocus>
-                    </div>
-                    @error('username')
-                        <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
+        <h4 class="text-center mb-4">Admin Portal Login</h4>
+        
+        @if(session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+        
+        @if($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        
+        <form method="POST" action="{{ route('login') }}" class="login-form" id="loginForm">
+            @csrf
+            
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control with-icon @error('username') is-invalid @enderror" 
+                           name="username" 
+                           value="{{ old('username') }}" 
+                           placeholder="Username" 
+                           required 
+                           autofocus>
                 </div>
+                @error('username')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-                <div class="mb-3">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-lock"></i>
-                        </span>
-                        <input type="password" 
-                               class="form-control with-icon @error('password') is-invalid @enderror" 
-                               name="password" 
-                               placeholder="Password" 
-                               required>
-                    </div>
-                    @error('password')
-                        <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" 
+                           class="form-control with-icon @error('password') is-invalid @enderror" 
+                           name="password" 
+                           placeholder="Password" 
+                           required>
                 </div>
+                @error('password')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
                     <label class="form-check-label" for="remember">
-                        Remember me
+                        Remember Me
                     </label>
                 </div>
+                
+                <a href="{{ route('password.request') }}" class="btn-link">Forgot Password?</a>
+            </div>
 
-                <button type="submit" class="btn btn-login">
-                    <i class="fas fa-sign-in-alt me-2"></i>Login
-                </button>
-            </form>
-
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+        </form>
+        
+        <div class="login-footer">
+            <p>© {{ date('Y') }} Nexitel POS System. All rights reserved.</p>
+            
             <div class="portal-links">
-                <p class="text-muted mb-2">Other Portals:</p>
-                <a href="{{ route('retailer.login') }}">
-                    <i class="fas fa-store me-1"></i>Retailer Portal
-                </a>
-                <a href="{{ route('customer.login') }}">
-                    <i class="fas fa-user me-1"></i>Customer Portal
-                </a>
+                <a href="{{ route('customer.login') }}">Customer Portal</a>
+                <span>|</span>
+                <a href="{{ route('retailer.login') }}">Retailer Portal</a>
             </div>
         </div>
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
         document.getElementById('loginForm').addEventListener('submit', function() {

@@ -16,8 +16,13 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->enum('role', ['Super Admin', 'Admin', 'Manager', 'Sales Agent', 'Cashier'])->default('Sales Agent');
-            $table->boolean('is_active')->default(true);
+            $table->string('address')->nullable();
+            $table->string('position')->nullable();
+            $table->decimal('salary', 10, 2)->nullable();
+            $table->date('hire_date')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('employee_id')->nullable()->unique();
+            $table->string('profile_photo')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
