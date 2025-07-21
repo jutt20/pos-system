@@ -65,6 +65,7 @@ Route::middleware('auth:employee')->group(function () {
     Route::resource('activations', ActivationController::class);
 
     // SIM Orders
+    Route::get('sim-orders/export', [\App\Http\Controllers\SimOrderController::class, 'export'])->name('sim-orders.export');
     Route::resource('sim-orders', SimOrderController::class);
 
     // SIM Stock

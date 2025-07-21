@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
             QuickSeeder::class,
             SampleDataSeeder::class,
             DeliveryServiceSeeder::class,
-            OnlineSimOrderSeeder::class,
+            SimOrderSeeder::class,
             SimStockSeeder::class,
             ChatSeeder::class,
         ]);

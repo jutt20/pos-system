@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Activation;
+use App\Models\DeliveryService;
 use App\Models\SimOrder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -204,6 +205,8 @@ class QuickSeeder extends Seeder
         ]);
 
         // SIM Orders (unchanged)
+        $deliveryService = DeliveryService::first(); // Example: use first available for seeder
+
         SimOrder::create([
             'customer_id' => $customer1->id,
             'employee_id' => $admin->id,
@@ -214,7 +217,8 @@ class QuickSeeder extends Seeder
             'unit_cost' => 100.00,
             'total_cost' => 500.00,
             'status' => 'delivered',
-            'notes' => 'Invoice attached. Shipped with DHL tracking #DHL12345',
+            'order_type' => 'pickup',
+            'notes' => 'Invoice attached. Picked up in person.',
             'order_date' => now()->subDays(10),
         ]);
 
@@ -228,7 +232,17 @@ class QuickSeeder extends Seeder
             'unit_cost' => 90.00,
             'total_cost' => 270.00,
             'status' => 'shipped',
-            'notes' => 'Shipped. Tracking URL: https://courier.example.com/track/JZ98765',
+            'order_type' => 'delivery',
+            'delivery_service_id' => $deliveryService?->id,
+            'delivery_cost' => 15.00,
+            'delivery_address' => '456 Jazz Street',
+            'delivery_city' => 'Karachi',
+            'delivery_state' => 'Sindh',
+            'delivery_zip' => '75000',
+            'delivery_phone' => '+92123456789',
+            'tracking_number' => 'JZ98765',
+            'estimated_delivery' => now()->addDays(3),
+            'notes' => 'Shipped via CourierX. Tracking: JZ98765',
             'order_date' => now()->subDays(3),
         ]);
 
@@ -242,7 +256,17 @@ class QuickSeeder extends Seeder
             'unit_cost' => 120.00,
             'total_cost' => 1200.00,
             'status' => 'processing',
-            'notes' => 'Waiting on delivery confirmation.',
+            'order_type' => 'delivery',
+            'delivery_service_id' => $deliveryService?->id,
+            'delivery_cost' => 20.00,
+            'delivery_address' => '789 Zong Plaza',
+            'delivery_city' => 'Lahore',
+            'delivery_state' => 'Punjab',
+            'delivery_zip' => '54000',
+            'delivery_phone' => '+923112223334',
+            'tracking_number' => 'ZNG1122PK',
+            'estimated_delivery' => now()->addDays(5),
+            'notes' => 'Awaiting dispatch confirmation.',
             'order_date' => now()->subDay(),
         ]);
 

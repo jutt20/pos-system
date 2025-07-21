@@ -40,22 +40,30 @@
                                 <td>{{ number_format($simOrder->quantity) }}</td>
                             </tr>
                             <tr>
+                                <td><strong>Order Type:</strong></td>
+                                <td>{{ ucfirst($simOrder->order_type) }}</td>
+                            </tr>
+                            <tr>
                                 <td><strong>Order Date:</strong></td>
                                 <td>{{ $simOrder->order_date->format('M d, Y') }}</td>
                             </tr>
                         </table>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <h6>Cost Information</h6>
                         <table class="table table-sm">
                             <tr>
                                 <td><strong>Cost Per SIM:</strong></td>
-                                <td>${{ number_format($simOrder->cost_per_sim, 2) }}</td>
+                                <td>${{ number_format($simOrder->unit_cost, 2) }}</td>
                             </tr>
                             <tr>
                                 <td><strong>Total Cost:</strong></td>
                                 <td><strong>${{ number_format($simOrder->total_cost, 2) }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Delivery Cost:</strong></td>
+                                <td>${{ number_format($simOrder->delivery_cost, 2) }}</td>
                             </tr>
                             <tr>
                                 <td><strong>Status:</strong></td>
@@ -78,7 +86,41 @@
                         </table>
                     </div>
                 </div>
-                
+
+                @if($simOrder->order_type === 'delivery')
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6>Delivery Information</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Address:</strong></td>
+                                <td>{{ $simOrder->delivery_address }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>City:</strong></td>
+                                <td>{{ $simOrder->delivery_city }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>State:</strong></td>
+                                <td>{{ $simOrder->delivery_state }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ZIP:</strong></td>
+                                <td>{{ $simOrder->delivery_zip }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phone:</strong></td>
+                                <td>{{ $simOrder->delivery_phone }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Delivery Service:</strong></td>
+                                <td>{{ $simOrder->deliveryService?->name ?? 'N/A' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                @endif
+
                 @if($simOrder->notes)
                 <div class="row mt-3">
                     <div class="col-12">
@@ -89,18 +131,16 @@
                     </div>
                 </div>
                 @endif
-                
-                @if($simOrder->invoice_file)
+
                 <div class="row mt-3">
                     <div class="col-12">
-                        <h6>Invoice File</h6>
-                        <a href="{{ Storage::url($simOrder->invoice_file) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-file-pdf"></i> View Invoice File
+                        <h6>Invoice</h6>
+                        <a href="{{ asset('storage/invoices/sim-order-' . $simOrder->id . '.pdf') }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-file-pdf"></i> View Invoice
                         </a>
                     </div>
                 </div>
-                @endif
-                
+
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="d-flex justify-content-between">
